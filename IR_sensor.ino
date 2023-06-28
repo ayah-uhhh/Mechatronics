@@ -16,8 +16,8 @@ void loop() {
 
   int dig3 = digitalRead(4);
   int analog3 = analogRead(A2); //right
-  Serial.print(dig);
   Serial.print(dig2);
+  Serial.print(dig);
   Serial.println(dig3);
 
 
