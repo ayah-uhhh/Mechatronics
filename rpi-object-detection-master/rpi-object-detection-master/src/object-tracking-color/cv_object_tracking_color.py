@@ -61,7 +61,7 @@ def on_mouse_click(event, x, y, flags, frame):
         item_length = len(colors)
         with open('rgb_hardcode.csv', 'w') as f:
             file_writer = csv.writer(f)
-            for i in range(item_length):
+            for i in range(item_length+1):
                file_writer.writerow([x[i] for x in colors]) 
 	        #f.write(item)
             f.close()
