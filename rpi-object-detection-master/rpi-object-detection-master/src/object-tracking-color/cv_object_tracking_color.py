@@ -201,20 +201,21 @@ if __name__ == "__main__":
                 cx,cy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
                 cv2.circle(frame,(cx,cy),5,255,-1)
                 print("Central pos: (%d, %d)" % (cx,cy))
+                print('r:',r,'g:',g,'b:',b)
             else:
                 print("[Warning]Tag lost...")
 
             # Show the original and processed image
             #res = cv2.bitwise_and(frame, frame, mask=thresh2)
             cv2.imshow('frame', visualize_fps(frame, fps))
-            cv2.imshow('thresh', visualize_fps(thresh2, fps))
+            #cv2.imshow('thresh', visualize_fps(thresh2, fps))
             # ----------------------------------------------------------------------
             # record end time
             end_time = time.time()
             # calculate FPS
             seconds = end_time - start_time
             fps = 1.0 / seconds
-            print("Estimated fps:{0:0.1f}".format(fps));
+            #print("Estimated fps:{0:0.1f}".format(fps));
             # if key pressed is 'Esc' then exit the loop
             if cv2.waitKey(33) == 27:
                 break
