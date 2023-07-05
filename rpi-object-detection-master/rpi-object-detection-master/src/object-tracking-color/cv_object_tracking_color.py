@@ -56,9 +56,9 @@ def on_mouse_click(event, x, y, flags, frame):
         print(color_hsv)
         
         colors.append(color_hsv)
-        with open('rgb_hardcode.txt', 'w') as f:
+        with open('rgb_hardcode.csv', 'w') as f:
             for item in colors:
-	            f.write(str.item)
+	            f.write(item)
             f.close()
         print(colors)
         
@@ -161,7 +161,7 @@ if __name__ == "__main__":
             cv2.namedWindow('frame')
             cv2.setMouseCallback('frame', on_mouse_click, frame)
             if learning == 0:
-                colors = open('rgb_hardcode.txt', 'r')
+                colors = open('rgb_hardcode.csv', 'r')
 
         
             # Uncomment this for RED tag
