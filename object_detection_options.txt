@@ -1,0 +1,8 @@
+RPI object detection detection options: 
+
+camera-test
+motion-detection
+object-tracking-feature
+object-tracking-color
+object-tracking-shape
+face-detection
