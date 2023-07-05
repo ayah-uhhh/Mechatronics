@@ -57,7 +57,9 @@ def on_mouse_click(event, x, y, flags, frame):
         
         colors.append(color_hsv)
         with open('rgb_hardcode.txt', 'w') as f:
-            f.write(colors)
+            for item in colors:
+	            f.write(item+"/")
+
         print(colors)
         
 
