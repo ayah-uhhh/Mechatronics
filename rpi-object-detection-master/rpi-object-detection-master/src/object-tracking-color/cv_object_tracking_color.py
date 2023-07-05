@@ -30,7 +30,7 @@ fps = 0
 hsv_min = np.array((50, 80, 80))
 hsv_max = np.array((120, 255, 255))
 
-colors = []
+colors = [(25, 236, 150)]
 
 
 def isset(v):
@@ -58,6 +58,8 @@ def on_mouse_click(event, x, y, flags, frame):
         colors.append(color_hsv)
 
         print(colors)
+        with open('rgb_hardcode.txt', 'w') as f:
+            f.write(colors)
 
 
 # R, G, B values are [0, 255]. 
