@@ -21,7 +21,7 @@
 import cv2
 import numpy as np
 import time
-
+learning = 1
 CAMERA_DEVICE_ID = 0
 IMAGE_WIDTH = 320
 IMAGE_HEIGHT = 240
@@ -54,12 +54,12 @@ def on_mouse_click(event, x, y, flags, frame):
 
         color_hsv = rgb2hsv(color_rgb[0], color_rgb[1], color_rgb[2])
         print(color_hsv)
-
+        
         colors.append(color_hsv)
-
-        print(colors)
         with open('rgb_hardcode.txt', 'w') as f:
             f.write(colors)
+        print(colors)
+        
 
 
 # R, G, B values are [0, 255]. 
@@ -158,7 +158,10 @@ if __name__ == "__main__":
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
             cv2.namedWindow('frame')
             cv2.setMouseCallback('frame', on_mouse_click, frame)
+            if learning == 0:
+                colors = open('rgb_hardcode.txt', 'r')
 
+        
             # Uncomment this for RED tag
             # thresh = cv2.inRange(hsv,np.array((120, 80, 80)), np.array((180, 255, 255)))
 
@@ -175,6 +178,8 @@ if __name__ == "__main__":
                 print("New HSV threshold: ", (minh, mins, minv), (maxh, maxs, maxv))
                 hsv_min = np.array((minh, mins, minv))
                 hsv_max = np.array((maxh, maxs, maxv))
+
+            
 
             thresh = cv2.inRange(hsv, hsv_min, hsv_max)
             thresh2 = thresh.copy()
@@ -203,7 +208,6 @@ if __name__ == "__main__":
                 cx,cy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
                 cv2.circle(frame,(cx,cy),5,255,-1)
                 print("Central pos: (%d, %d)" % (cx,cy))
-                print('r:',r,'g:',g,'b:',b)
             else:
                 print("[Warning]Tag lost...")
 
