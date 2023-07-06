@@ -152,7 +152,8 @@ if __name__ == "__main__":
             with open("./rgb_hardcode.csv", 'r') as file:
                 csvreader = csv.reader(file)
                 for row in csvreader:
-                    row = [str(value) for value in row]
+                    row = [int(value) for value in row]
+
                     colors.append(tuple(row))
                 print(colors)
         while True:
@@ -192,7 +193,7 @@ if __name__ == "__main__":
 
             
 
-            thresh = cv2.inRange(np.float32((hsv, hsv_min, hsv_max)))
+            thresh = cv2.inRange((hsv, hsv_min, hsv_max))
             thresh2 = thresh.copy()
 
             # find contours in the threshold image
