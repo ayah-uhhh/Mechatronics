@@ -148,9 +148,9 @@ if __name__ == "__main__":
         # set resolution to 320x240 to reduce latency 
         cap.set(3, IMAGE_WIDTH)
         cap.set(4, IMAGE_HEIGHT)
-    if learning == 0:
-        colors = open('rgb_hardcode.csv', 'r')
-        
+        if learning == 0:
+            colors = open('rgb_hardcode.csv', 'r')
+
         while True:
             # ----------------------------------------------------------------------
             # record start time
