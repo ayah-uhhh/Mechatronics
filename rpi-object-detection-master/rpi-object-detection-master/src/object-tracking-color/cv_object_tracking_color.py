@@ -152,8 +152,8 @@ if __name__ == "__main__":
             with open("./rgb_hardcode.csv", 'r') as file:
                 csvreader = csv.reader(file)
                 for row in csvreader:
-                    color.append(row)
-            print(color)
+                    colors.append(row)
+            print(colors)
         while True:
             # ----------------------------------------------------------------------
             # record start time
