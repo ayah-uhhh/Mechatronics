@@ -151,8 +151,11 @@ if __name__ == "__main__":
         if learning == 0:
             with open("./rgb_hardcode.csv", 'r') as file:
                 csvreader = csv.reader(file)
-                for row in csvreader:
-                    colors.append(tuple(int(row)))
+
+                
+            for row in csvreader:
+                row = [str(x) for value in row]
+                colors.append(tuple(row))
             print(colors)
         while True:
             # ----------------------------------------------------------------------
