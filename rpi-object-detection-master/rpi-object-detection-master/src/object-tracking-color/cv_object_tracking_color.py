@@ -190,7 +190,7 @@ if __name__ == "__main__":
                 print("New HSV threshold: ", (minh, mins, minv), (maxh, maxs, maxv))
                 hsv_min = np.array((minh, mins, minv))
                 hsv_max = np.array((maxh, maxs, maxv))
-
+                print("hsvmin=",hsv_min)
             
 
             thresh = cv2.inRange((hsv, hsv_min, hsv_max))
