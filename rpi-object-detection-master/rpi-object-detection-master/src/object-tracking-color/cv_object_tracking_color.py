@@ -193,7 +193,7 @@ if __name__ == "__main__":
                 print("hsvmin=",hsv_min)
             
 
-            thresh = cv2.inRange((hsv, hsv_min, hsv_max))
+            thresh = cv2.inRange(hsv, hsv_min, hsv_max)
             thresh2 = thresh.copy()
 
             # find contours in the threshold image
