@@ -152,7 +152,7 @@ if __name__ == "__main__":
             colors = pd.read_csv('rgb_hardcode.csv', header = None)
             # with open('rgb_hardcode.csv', 'r') as f:
             #     colorfile = csv.reader(f)
-            print(colors, 'colors!!!!! YAA')
+            print(colors)
             # for row in colorfile:
             #     colors = [row]
 
