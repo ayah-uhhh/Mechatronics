@@ -138,7 +138,7 @@ def visualize_fps(image, fps: int):
                 font_size, text_color, font_thickness)
 
     return image
-
+import pandas as pd
 
 if __name__ == "__main__":
     try:
@@ -149,11 +149,12 @@ if __name__ == "__main__":
         cap.set(3, IMAGE_WIDTH)
         cap.set(4, IMAGE_HEIGHT)
         if learning == 0:
-            with open('rgb_hardcode.csv', 'r') as f:
-                colorfile = csv.reader(f)
-            print(colorfile, 'colors!!!!! YAA')
-            for row in colorfile:
-                colors = [row]
+            colors = pd.read_csv("rgb_hardcode.csv")
+            # with open('rgb_hardcode.csv', 'r') as f:
+            #     colorfile = csv.reader(f)
+            print(colors, 'colors!!!!! YAA')
+            # for row in colorfile:
+            #     colors = [row]
 
         while True:
             # ----------------------------------------------------------------------
