@@ -148,14 +148,12 @@ if __name__ == "__main__":
         # set resolution to 320x240 to reduce latency 
         cap.set(3, IMAGE_WIDTH)
         cap.set(4, IMAGE_HEIGHT)
-        if learning == 0:
-            colors = pd.read_csv('rgb_hardcode.csv', header = None)
-            # with open('rgb_hardcode.csv', 'r') as f:
-            #     colorfile = csv.reader(f)
-            print(colors)
-            # for row in colorfile:
-            #     colors = [row]
-
+      if learning == 0:
+        with open("./rgb_hardcode.csv", 'r') as file:
+            csvreader = csv.reader(file)
+            for row in csvreader:
+                color.append(row)
+        print(color)
         while True:
             # ----------------------------------------------------------------------
             # record start time
