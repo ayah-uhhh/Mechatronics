@@ -149,7 +149,7 @@ if __name__ == "__main__":
         cap.set(3, IMAGE_WIDTH)
         cap.set(4, IMAGE_HEIGHT)
         if learning == 0:
-            colors = pd.read_csv("rgb_hardcode.csv")
+            colors = pd.read_csv("rgb_hardcode.csv").all()
             # with open('rgb_hardcode.csv', 'r') as f:
             #     colorfile = csv.reader(f)
             print(colors, 'colors!!!!! YAA')
