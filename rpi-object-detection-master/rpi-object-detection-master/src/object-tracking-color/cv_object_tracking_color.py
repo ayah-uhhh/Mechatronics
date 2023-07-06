@@ -150,8 +150,10 @@ if __name__ == "__main__":
         cap.set(4, IMAGE_HEIGHT)
         if learning == 0:
             with open('rgb_hardcode.csv', 'r') as f:
-                colors = csv.reader(f)
-            print(colors, 'colors!!!!! YAA')
+                colorfile = csv.reader(f)
+            print(colorfile, 'colors!!!!! YAA')
+            for row in colorfile:
+                colors = [row]
 
         while True:
             # ----------------------------------------------------------------------
