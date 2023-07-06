@@ -32,7 +32,7 @@ fps = 0
 hsv_min = np.array((50, 80, 80))
 hsv_max = np.array((120, 255, 255))
 
-colors = [()]
+colors = []
 
 
 def isset(v):
