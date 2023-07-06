@@ -148,7 +148,9 @@ if __name__ == "__main__":
         # set resolution to 320x240 to reduce latency 
         cap.set(3, IMAGE_WIDTH)
         cap.set(4, IMAGE_HEIGHT)
-
+    if learning == 0:
+        colors = open('rgb_hardcode.csv', 'r')
+        
         while True:
             # ----------------------------------------------------------------------
             # record start time
@@ -164,8 +166,7 @@ if __name__ == "__main__":
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
             cv2.namedWindow('frame')
             cv2.setMouseCallback('frame', on_mouse_click, frame)
-            if learning == 0:
-                colors = open('rgb_hardcode.csv', 'r')
+
 
         
             # Uncomment this for RED tag
