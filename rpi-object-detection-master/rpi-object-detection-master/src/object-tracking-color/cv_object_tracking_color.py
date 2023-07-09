@@ -140,6 +140,17 @@ def visualize_fps(image, fps: int):
     return image
 import pandas as pd
 
+def check_color(pixel):
+    color_ranges = {
+        'Red': [(0, 0, 0), (30, 255, 255)],
+        'Green': [(40, 0, 0), (80, 255, 255)],
+        'Blue': [(90, 0, 0), (130, 255, 255)]
+    }
+    for color, (lower, upper) in color_ranges.items():
+        if np.all(pixel >= lower) and np.all(pixel <= upper):
+            return color
+    return None
+
 if __name__ == "__main__":
     try:
         # create video capture
@@ -220,7 +231,11 @@ if __name__ == "__main__":
                 cx,cy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
                 cv2.circle(frame,(cx,cy),5,255,-1)
                 print("Central pos: (%d, %d)" % (cx,cy))
+                if color is not None:
+                    trigger = {'Red': 1, 'Green': 2, 'Blue': 3}[color]
+                    print("Detected color:", color)
             else:
+                trigger = 0
                 print("[Warning]Tag lost...")
 
             # Show the original and processed image
@@ -237,6 +252,7 @@ if __name__ == "__main__":
             # if key pressed is 'Esc' then exit the loop
             if cv2.waitKey(33) == 27:
                 break
+            
     except Exception as e:
         print(e)
     finally:
