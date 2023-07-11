@@ -225,7 +225,7 @@ if __name__ == "__main__":
                     max_area = area
                     best_cnt = cnt
                     #print(hsv)
-                    print("color = ",color)
+                    # print("color = ",color)
                    
 
             # finding centroids of best_cnt and draw a circle there
