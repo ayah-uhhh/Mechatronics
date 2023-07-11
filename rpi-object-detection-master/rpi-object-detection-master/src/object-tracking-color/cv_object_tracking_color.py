@@ -231,7 +231,7 @@ if __name__ == "__main__":
                 cx,cy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
                 cv2.circle(frame,(cx,cy),5,255,-1)
                 print("Central pos: (%d, %d)" % (cx,cy))
-                color = check_colors()
+                color = check_colors(best_cnt)
                 if color is not None:
                     trigger = {'Red': 1, 'Green': 2, 'Blue': 3}[color]
                     print("Detected color:", color)
