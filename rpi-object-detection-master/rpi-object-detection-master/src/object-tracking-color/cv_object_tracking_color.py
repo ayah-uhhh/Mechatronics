@@ -23,7 +23,7 @@ import numpy as np
 import time
 import csv
 
-learning = 1 #training blue
+learning = 0
 CAMERA_DEVICE_ID = 0
 IMAGE_WIDTH = 320
 IMAGE_HEIGHT = 240
@@ -59,7 +59,7 @@ def on_mouse_click(event, x, y, flags, frame):
         
         colors.append(color_hsv)
         item_length = len(colors)
-        with open('blue_hardcode.csv', 'w') as f:
+        with open('rgb_hardcode.csv', 'w') as f:
             file_writer = csv.writer(f)
             for color in colors:
                 file_writer.writerow(color)
@@ -147,7 +147,7 @@ def check_colors(pixel):
         'Blue': [(90, 0, 0), (130, 255, 255)]
     }
     for color, (lower, upper) in color_ranges.items():
-        if np.all(pixel >= lower) and np.all(pixel <= upper):
+        if np.all(pixel[0] >= lower[0]) and np.all(pixel[0] <= upper[0]):
             return color
     return None
 
@@ -160,7 +160,7 @@ if __name__ == "__main__":
         cap.set(3, IMAGE_WIDTH)
         cap.set(4, IMAGE_HEIGHT)
         if learning == 0:
-            with open("./blue_hardcode.csv", 'r') as file:
+            with open("./rgb_hardcode.csv", 'r') as file:
                 csvreader = csv.reader(file)
                 for row in csvreader:
                     row = [int(value) for value in row]
