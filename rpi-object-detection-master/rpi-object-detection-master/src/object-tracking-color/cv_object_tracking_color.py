@@ -23,7 +23,7 @@ import numpy as np
 import time
 import csv
 
-learning = 1
+learning = 0
 CAMERA_DEVICE_ID = 0
 IMAGE_WIDTH = 320
 IMAGE_HEIGHT = 240
@@ -225,6 +225,7 @@ if __name__ == "__main__":
                     max_area = area
                     best_cnt = cnt
                     print(hsv)
+                    print(color)
 
             # finding centroids of best_cnt and draw a circle there
             if isset('best_cnt'):
