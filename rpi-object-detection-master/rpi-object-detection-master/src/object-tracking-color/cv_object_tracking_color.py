@@ -52,10 +52,10 @@ def on_mouse_click(event, x, y, flags, frame):
         color_rgb = tuple(reversed(color_bgr))
         #frame[y,x].tolist()
 
-        print(color_rgb)
+        # print(color_rgb)
 
         color_hsv = rgb2hsv(color_rgb[0], color_rgb[1], color_rgb[2])
-        print(color_hsv)
+        # print(color_hsv)
         
         colors.append(color_hsv)
         item_length = len(colors)
@@ -166,7 +166,7 @@ if __name__ == "__main__":
                     row = [int(value) for value in row]
 
                     colors.append(tuple(row))
-                print(colors)
+                # print(colors)
         while True:
             # ----------------------------------------------------------------------
             # record start time
@@ -198,10 +198,10 @@ if __name__ == "__main__":
                 maxs = max(c[1] for c in colors)
                 maxv = max(c[2] for c in colors)
 
-                print("New HSV threshold: ", (minh, mins, minv), (maxh, maxs, maxv))
+                # print("New HSV threshold: ", (minh, mins, minv), (maxh, maxs, maxv))
                 hsv_min = np.array((minh, mins, minv))
                 hsv_max = np.array((maxh, maxs, maxv))
-                print("hsvmin=",hsv_min)
+                # print("hsvmin=",hsv_min)
             
 
             thresh = cv2.inRange(hsv, hsv_min, hsv_max)
@@ -224,20 +224,21 @@ if __name__ == "__main__":
                 if area > max_area:
                     max_area = area
                     best_cnt = cnt
+                    print(best_cnt)
 
             # finding centroids of best_cnt and draw a circle there
             if isset('best_cnt'):
                 M = cv2.moments(best_cnt)
                 cx,cy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
                 cv2.circle(frame,(cx,cy),5,255,-1)
-                print("Central pos: (%d, %d)" % (cx,cy))
+                # print("Central pos: (%d, %d)" % (cx,cy))
                 color = check_colors(best_cnt)
                 if color is not None:
                     trigger = {'Red': 1, 'Green': 2, 'Blue': 3}[color]
                     print("Detected color:", color)
             else:
                 trigger = 0
-                print("[Warning]Tag lost...")
+                # print("[Warning]Tag lost...")
 
             # Show the original and processed image
             #res = cv2.bitwise_and(frame, frame, mask=thresh2)
