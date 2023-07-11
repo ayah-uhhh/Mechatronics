@@ -224,7 +224,7 @@ if __name__ == "__main__":
                 if area > max_area:
                     max_area = area
                     best_cnt = cnt
-                    print(best_cnt)
+                    print(thresh)
 
             # finding centroids of best_cnt and draw a circle there
             if isset('best_cnt'):
