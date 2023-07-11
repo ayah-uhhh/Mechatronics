@@ -23,7 +23,7 @@ import numpy as np
 import time
 import csv
 
-learning = 0
+learning = 1 #training blue
 CAMERA_DEVICE_ID = 0
 IMAGE_WIDTH = 320
 IMAGE_HEIGHT = 240
@@ -59,7 +59,7 @@ def on_mouse_click(event, x, y, flags, frame):
         
         colors.append(color_hsv)
         item_length = len(colors)
-        with open('rgb_hardcode.csv', 'w') as f:
+        with open('blue_hardcode.csv', 'w') as f:
             file_writer = csv.writer(f)
             for color in colors:
                 file_writer.writerow(color)
