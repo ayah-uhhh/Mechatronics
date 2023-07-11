@@ -147,7 +147,7 @@ def check_colors(pixel):
         'Blue': [(90, 0, 0), (130, 255, 255)]
     }
     for color, (lower, upper) in color_ranges.items():
-        if np.all(pixel >= lower) and np.all(pixel <= upper):
+        if (pixel[0] >= lower[0]) and (pixel[0] <= upper[0]):
             return color
     return None
 
@@ -226,7 +226,7 @@ if __name__ == "__main__":
                     best_cnt = cnt
                     #print(hsv)
                     print("color = ",color)
-                    print("pixel = ", pixel)
+                   
 
             # finding centroids of best_cnt and draw a circle there
             if isset('best_cnt'):
