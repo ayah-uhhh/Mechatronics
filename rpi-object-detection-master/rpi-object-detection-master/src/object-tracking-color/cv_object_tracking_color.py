@@ -224,7 +224,7 @@ if __name__ == "__main__":
                 if area > max_area:
                     max_area = area
                     best_cnt = cnt
-                    #print(hsv)
+                    print(hsv)
                     # print("color = ",color)
                    
 
