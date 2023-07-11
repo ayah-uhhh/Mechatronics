@@ -160,7 +160,7 @@ if __name__ == "__main__":
         cap.set(3, IMAGE_WIDTH)
         cap.set(4, IMAGE_HEIGHT)
         if learning == 0:
-            with open("./rgb_hardcode.csv", 'r') as file:
+            with open("./blue_hardcode.csv", 'r') as file:
                 csvreader = csv.reader(file)
                 for row in csvreader:
                     row = [int(value) for value in row]
