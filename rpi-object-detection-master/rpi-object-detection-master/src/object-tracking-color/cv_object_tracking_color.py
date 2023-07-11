@@ -147,7 +147,7 @@ def check_colors(pixel):
         'Blue': [(90, 0, 0), (130, 255, 255)]
     }
     for color, (lower, upper) in color_ranges.items():
-        if (pixel[0] >= lower[0]) and (pixel[0] <= upper[0]):
+        if np.all(pixel[0] >= lower[0]) and np.all(pixel[0] <= upper[0]):
             return color
     return None
 
