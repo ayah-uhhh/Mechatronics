@@ -224,7 +224,7 @@ if __name__ == "__main__":
                 if area > max_area:
                     max_area = area
                     best_cnt = cnt
-                    print(thresh[0])
+                    # print(thresh[0])
 
             # finding centroids of best_cnt and draw a circle there
             if isset('best_cnt'):
@@ -232,7 +232,7 @@ if __name__ == "__main__":
                 cx,cy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
                 cv2.circle(frame,(cx,cy),5,255,-1)
                 # print("Central pos: (%d, %d)" % (cx,cy))
-                color = check_colors(best_cnt)
+                color = check_colors(hsv)
                 if color is not None:
                     trigger = {'Red': 1, 'Green': 2, 'Blue': 3}[color]
                     print("Detected color:", color)
