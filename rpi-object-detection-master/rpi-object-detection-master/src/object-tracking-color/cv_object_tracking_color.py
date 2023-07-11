@@ -139,7 +139,7 @@ def visualize_fps(image, fps: int):
 
     return image
 import pandas as pd
-
+color = None
 def check_color(pixel):
     color_ranges = {
         'Red': [(0, 0, 0), (30, 255, 255)],
@@ -148,7 +148,7 @@ def check_color(pixel):
     }
     for color, (lower, upper) in color_ranges.items():
         if np.all(pixel >= lower) and np.all(pixel <= upper):
-            return colors
+            return color
     return None
 
 if __name__ == "__main__":
@@ -231,7 +231,8 @@ if __name__ == "__main__":
                 cx,cy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
                 cv2.circle(frame,(cx,cy),5,255,-1)
                 print("Central pos: (%d, %d)" % (cx,cy))
-                if colors is not None:
+                color = check_colors()
+                if color is not None:
                     trigger = {'Red': 1, 'Green': 2, 'Blue': 3}[color]
                     print("Detected color:", color)
             else:
