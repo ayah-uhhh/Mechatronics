@@ -140,7 +140,7 @@ def visualize_fps(image, fps: int):
     return image
 import pandas as pd
 color = None
-def check_color(pixel):
+def check_colors(pixel):
     color_ranges = {
         'Red': [(0, 0, 0), (30, 255, 255)],
         'Green': [(40, 0, 0), (80, 255, 255)],
