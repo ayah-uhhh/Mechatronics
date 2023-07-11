@@ -148,7 +148,7 @@ def check_color(pixel):
     }
     for color, (lower, upper) in color_ranges.items():
         if np.all(pixel >= lower) and np.all(pixel <= upper):
-            return color
+            return colors
     return None
 
 if __name__ == "__main__":
