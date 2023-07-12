@@ -147,7 +147,7 @@ def check_colors(pixel):
         'Blue': [(90, 0, 0), (130, 255, 255)]
     }
     for color, (lower, upper) in color_ranges.items():
-        if np.all(pixel[0] >= lower[0]) and np.all(pixel[0] <= upper[0]):
+        if np.all(pixel >= lower) and np.all(pixel <= upper):
             return color
     return None
 
@@ -224,7 +224,7 @@ if __name__ == "__main__":
                 if area > max_area:
                     max_area = area
                     best_cnt = cnt
-                    print(hsv)
+                    #print(hsv)
                     # print("color = ",color)
                    
 
@@ -234,7 +234,9 @@ if __name__ == "__main__":
                 cx,cy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
                 cv2.circle(frame,(cx,cy),5,255,-1)
                 # print("Central pos: (%d, %d)" % (cx,cy))
-                color = check_colors(hsv)
+                
+                hsv_pixel = hsv[cy,cx]
+                color = check_colors(hsv_pixel)
                 if color is not None:
                     trigger = {'Red': 1, 'Green': 2, 'Blue': 3}[color]
                     print("Detected color:", color)
