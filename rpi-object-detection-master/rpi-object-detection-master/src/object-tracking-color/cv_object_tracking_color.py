@@ -264,10 +264,5 @@ def get_target():
                 if cv2.waitKey(33) == 27:
                     break
                 return(cx, cy)
-        except Exception as e:
-            print(e)
-        finally:
-            # Clean up and exit the program
-            cv2.destroyAllWindows()
-            cap.release()
+
 
