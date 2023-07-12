@@ -24,7 +24,7 @@ import time
 import csv
 
 color_state = 2
-learning = 1
+learning = 0
 CAMERA_DEVICE_ID = 0
 IMAGE_WIDTH = 320
 IMAGE_HEIGHT = 240
@@ -36,10 +36,14 @@ hsv_max = np.array((255, 255, 255))
 if color_state == 1: #GET THE GREENS
     colors = []
     color_file = 'green_hardcode.csv'
+    target_x = 176
+    target_y = 126
 
-if color_state == 2: #GET THE BLUES
+if color_state == 2: #GET THE BLUES 287, 161
     colors = []
     color_file = 'blue_hardcode.csv'
+    target_x = 287
+    target_y = 161
 cx = None
 cy = None
 
@@ -268,8 +272,7 @@ if __name__ == "__main__":
             print(f"Central position: ({cx}, {cy})")
 
             # Calculate the distance
-            target_x = 176
-            target_y = 126
+
             # distance = np.sqrt((cx - target_x) ** 2 + (cy - target_y) ** 2)
             x_dist = abs(cx - target_x)
             y_dist = abs(cy - target_y)
