@@ -270,4 +270,5 @@ def get_target():
             # Clean up and exit the program
             cv2.destroyAllWindows()
             cap.release()
-    return(cx, cy)
+    if cx != None:
+        return(cx, cy)
