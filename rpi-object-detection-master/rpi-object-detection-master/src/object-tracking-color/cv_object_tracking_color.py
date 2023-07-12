@@ -264,5 +264,7 @@ def get_target():
                 if cv2.waitKey(33) == 27:
                     break
                 return(cx, cy)
+        except Exception as e:
+            print(e)
 
 
