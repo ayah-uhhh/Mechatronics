@@ -143,8 +143,8 @@ color = None
 def check_colors(pixel):
     color_ranges = {
         'Red': [(0, 0, 0), (30, 255, 255)],
-        'Green': [(40, 0, 0), (80, 255, 255)],
-        'Blue': [(90, 0, 0), (130, 255, 255)]
+        'Green': [(40, 0, 0), (95, 255, 255)],
+        'Blue': [(100, 0, 0), (130, 255, 255)]
     }
     for color, (lower, upper) in color_ranges.items():
         if np.all(pixel >= lower) and np.all(pixel <= upper):
@@ -249,7 +249,7 @@ if __name__ == "__main__":
             # Show the original and processed image
             #res = cv2.bitwise_and(frame, frame, mask=thresh2)
             cv2.imshow('frame', visualize_fps(frame, fps))
-            #cv2.imshow('thresh', visualize_fps(thresh2, fps))
+            cv2.imshow('thresh', visualize_fps(thresh2, fps))
             # ----------------------------------------------------------------------
             # record end time
             end_time = time.time()
