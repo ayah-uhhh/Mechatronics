@@ -264,18 +264,21 @@ if __name__ == "__main__":
             # Calculate the distance
             target_x = 176
             target_y = 126
-            distance = np.sqrt((cx - target_x) ** 2 + (cy - target_y) ** 2)
-            if distance != 0:
+            # distance = np.sqrt((cx - target_x) ** 2 + (cy - target_y) ** 2)
+            x_dist = abs(cx - target_x)
+            y_dist = abs(cy - target_y)
+            if x_dist > 10:
                 if cx < target_x:
                     print("move right") #bot motion
                 if cx > target_x:
                     print("move left")
+            if y_dist > 10:
                 if cy > target_y:
                     print("move down") # ramp motion
                 if cy < target_y:
                     print("move up") 
             else:
-                print("Central position not found.")
+                print("You got it!")
             #print("Estimated fps:{0:0.1f}".format(fps));
             # if key pressed is 'Esc' then exit the loop
             if cv2.waitKey(33) == 27:
