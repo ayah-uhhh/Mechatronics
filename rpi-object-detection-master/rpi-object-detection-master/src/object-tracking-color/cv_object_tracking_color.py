@@ -263,12 +263,11 @@ def get_target():
                 # if key pressed is 'Esc' then exit the loop
                 if cv2.waitKey(33) == 27:
                     break
-                
+                return(cx, cy)
         except Exception as e:
             print(e)
         finally:
             # Clean up and exit the program
             cv2.destroyAllWindows()
             cap.release()
-    if cx != None:
-        return(cx, cy)
+
