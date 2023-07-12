@@ -240,8 +240,8 @@ if __name__ == "__main__":
                 if color is not None:
                     trigger = {'Red': 1, 'Green': 2, 'Blue': 3}[color]
                     print("Detected color:", color)
-                    print(hsv_pixel)
-                    time.sleep(5)
+                    #print(hsv_pixel)
+                    #time.sleep(5)
             else:
                 trigger = 0
                 # print("[Warning]Tag lost...")
