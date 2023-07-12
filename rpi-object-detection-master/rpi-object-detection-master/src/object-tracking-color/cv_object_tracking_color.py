@@ -23,7 +23,7 @@ import numpy as np
 import time
 import csv
 
-learning = 0
+learning = 1
 CAMERA_DEVICE_ID = 0
 IMAGE_WIDTH = 320
 IMAGE_HEIGHT = 240
