@@ -42,8 +42,8 @@ if color_state == 1: #GET THE GREENS
 if color_state == 2: #GET THE BLUES 287, 161
     colors = []
     color_file = 'blue_hardcode.csv'
-    target_x = 287
-    target_y = 161
+    target_x = 194
+    target_y = 163
 cx = None
 cy = None
 
@@ -281,13 +281,15 @@ if __name__ == "__main__":
                     print("move right") #bot motion
                 if cx > target_x:
                     print("move left")
+            else:
+                print("You got Y!")
             if y_dist > 10:
                 if cy > target_y:
                     print("move down") # ramp motion
                 if cy < target_y:
                     print("move up") 
             else:
-                print("You got it!")
+                print("You got Y!")
             #print("Estimated fps:{0:0.1f}".format(fps));
             # if key pressed is 'Esc' then exit the loop
             if cv2.waitKey(33) == 27:
