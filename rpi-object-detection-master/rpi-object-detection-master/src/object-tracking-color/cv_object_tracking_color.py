@@ -23,7 +23,7 @@ import numpy as np
 import time
 import csv
 
-
+color_state = 1
 learning = 0
 CAMERA_DEVICE_ID = 0
 IMAGE_WIDTH = 320
@@ -33,7 +33,13 @@ fps = 0
 hsv_min = np.array((0, 0, 0))
 hsv_max = np.array((255, 255, 255))
 
-colors = []
+if color_state == 1: #GET THE GREENS
+    colors = []
+    color_file = 'green_hardcode.csv'
+
+if color_state == 2: #GET THE BLUES
+    colors = []
+    color_file = 'blue_hardcode.csv'
 cx = None
 cy = None
 
@@ -61,7 +67,7 @@ def on_mouse_click(event, x, y, flags, frame):
         
         colors.append(color_hsv)
         item_length = len(colors)
-        with open('green_hardcode.csv', 'w') as f:
+        with open(color_file, 'w') as f:
             file_writer = csv.writer(f)
             for color in colors:
                 file_writer.writerow(color)
@@ -162,7 +168,7 @@ if __name__ == "__main__":
         cap.set(3, IMAGE_WIDTH)
         cap.set(4, IMAGE_HEIGHT)
         if learning == 0:
-            with open("./green_hardcode.csv", 'r') as file:
+            with open(color_file, 'r') as file:
                 csvreader = csv.reader(file)
                 for row in csvreader:
                     row = [int(value) for value in row]
