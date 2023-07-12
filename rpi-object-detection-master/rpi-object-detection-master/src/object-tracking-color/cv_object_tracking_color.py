@@ -282,7 +282,7 @@ if __name__ == "__main__":
                 if cx > target_x:
                     print("move left")
             else:
-                print("You got Y!")
+                print("You got X!")
             if y_dist > 10:
                 if cy > target_y:
                     print("move down") # ramp motion
