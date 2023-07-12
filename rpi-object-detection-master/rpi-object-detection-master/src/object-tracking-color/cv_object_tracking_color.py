@@ -243,7 +243,7 @@ def get_target():
                         trigger = {'Red': 1, 'Green': 2, 'Blue': 3}[color]
                         print("Detected color:", color)
                         print((cx,cy))
-                    return(cx, cy)
+
                 else:
                     trigger = 0
                     # print("[Warning]Tag lost...")
@@ -269,4 +269,4 @@ def get_target():
             # Clean up and exit the program
             cv2.destroyAllWindows()
             cap.release()
-
+    return(cx, cy)
