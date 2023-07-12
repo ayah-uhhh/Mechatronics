@@ -7,8 +7,9 @@ from cv_object_tracking_color import *
 target_x = 176
 target_y = 126
 
-cam_sees = get_target()
+
 while True:
+    cam_sees = get_target()
     if cam_sees is not None:
         cx, cy = cam_sees
         print(f"Central position: ({cx}, {cy})")

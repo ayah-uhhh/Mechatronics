@@ -34,7 +34,8 @@ hsv_min = np.array((0, 0, 0))
 hsv_max = np.array((255, 255, 255))
 
 colors = []
-
+cx = None
+cy = None
 
 def isset(v):
     try:
