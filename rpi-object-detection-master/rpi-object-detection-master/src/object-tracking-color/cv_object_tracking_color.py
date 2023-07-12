@@ -153,118 +153,136 @@ def check_colors(pixel):
             return color
     return None
 
-def get_target():
-    if __name__ == "__main__":
-        try:
-            # create video capture
-            cap = cv2.VideoCapture(CAMERA_DEVICE_ID)
+if __name__ == "__main__":
+    try:
+        # create video capture
+        cap = cv2.VideoCapture(CAMERA_DEVICE_ID)
 
-            # set resolution to 320x240 to reduce latency 
-            cap.set(3, IMAGE_WIDTH)
-            cap.set(4, IMAGE_HEIGHT)
-            if learning == 0:
-                with open("./green_hardcode.csv", 'r') as file:
-                    csvreader = csv.reader(file)
-                    for row in csvreader:
-                        row = [int(value) for value in row]
+        # set resolution to 320x240 to reduce latency 
+        cap.set(3, IMAGE_WIDTH)
+        cap.set(4, IMAGE_HEIGHT)
+        if learning == 0:
+            with open("./green_hardcode.csv", 'r') as file:
+                csvreader = csv.reader(file)
+                for row in csvreader:
+                    row = [int(value) for value in row]
 
-                        colors.append(tuple(row))
-                    # print(colors)
-            while True:
-                # ----------------------------------------------------------------------
-                # record start time
-                start_time = time.time()
-                # Read the frames frome a camera
-                _, frame = cap.read()
-                frame = cv2.blur(frame,(3,3))
+                    colors.append(tuple(row))
+                # print(colors)
+        while True:
+            # ----------------------------------------------------------------------
+            # record start time
+            start_time = time.time()
+            # Read the frames frome a camera
+            _, frame = cap.read()
+            frame = cv2.blur(frame,(3,3))
 
-                # Or get it from a JPEG
-                # frame = cv2.imread('frame0010.jpg', 1)
+            # Or get it from a JPEG
+            # frame = cv2.imread('frame0010.jpg', 1)
 
-                # Convert the image to hsv space and find range of colors
-                hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-                cv2.namedWindow('frame')
-                cv2.setMouseCallback('frame', on_mouse_click, frame)
+            # Convert the image to hsv space and find range of colors
+            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+            cv2.namedWindow('frame')
+            cv2.setMouseCallback('frame', on_mouse_click, frame)
 
 
+        
+            # Uncomment this for RED tag
+            # thresh = cv2.inRange(hsv,np.array((120, 80, 80)), np.array((180, 255, 255)))
+
+            # find the color using a color threshhold
+            if colors:
+                # find max & min h, s, v
+                minh = min(c[0] for c in colors)
+                mins = min(c[1] for c in colors)
+                minv = min(c[2] for c in colors)
+                maxh = max(c[0] for c in colors)
+                maxs = max(c[1] for c in colors)
+                maxv = max(c[2] for c in colors)
+
+                # print("New HSV threshold: ", (minh, mins, minv), (maxh, maxs, maxv))
+                hsv_min = np.array((minh, mins, minv))
+                hsv_max = np.array((maxh, maxs, maxv))
+                # print("hsvmin=",hsv_min)
             
-                # Uncomment this for RED tag
-                # thresh = cv2.inRange(hsv,np.array((120, 80, 80)), np.array((180, 255, 255)))
 
-                # find the color using a color threshhold
-                if colors:
-                    # find max & min h, s, v
-                    minh = min(c[0] for c in colors)
-                    mins = min(c[1] for c in colors)
-                    minv = min(c[2] for c in colors)
-                    maxh = max(c[0] for c in colors)
-                    maxs = max(c[1] for c in colors)
-                    maxv = max(c[2] for c in colors)
+            thresh = cv2.inRange(hsv, hsv_min, hsv_max)
+            thresh2 = thresh.copy()
 
-                    # print("New HSV threshold: ", (minh, mins, minv), (maxh, maxs, maxv))
-                    hsv_min = np.array((minh, mins, minv))
-                    hsv_max = np.array((maxh, maxs, maxv))
-                    # print("hsvmin=",hsv_min)
+            # find contours in the threshold image
+            (major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
+            #print(major_ver, minor_ver, subminor_ver)
+
+            # findContours() has different form for opencv2 and opencv3
+            if major_ver == "2" or major_ver == "3":
+                _, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+            else:
+                contours, hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+
+            # finding contour with maximum area and store it as best_cnt
+            max_area = 0
+            for cnt in contours:
+                area = cv2.contourArea(cnt)
+                if area > max_area:
+                    max_area = area
+                    best_cnt = cnt
+                    #print(hsv)
+                    # print("color = ",color)
                 
 
-                thresh = cv2.inRange(hsv, hsv_min, hsv_max)
-                thresh2 = thresh.copy()
+            # finding centroids of best_cnt and draw a circle there
+            if isset('best_cnt'):
+                M = cv2.moments(best_cnt)
+                cx,cy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
+                cv2.circle(frame,(cx,cy),5,255,-1)
+                # print("Central pos: (%d, %d)" % (cx,cy))
+                
+                hsv_pixel = hsv[cy,cx]
+                color = check_colors(hsv_pixel)
+                if color is not None:
+                    trigger = {'Red': 1, 'Green': 2, 'Blue': 3}[color]
+                    print("Detected color:", color)
+                    print((cx,cy))
+            
+            else:
+                trigger = 0
+                # print("[Warning]Tag lost...")
+                
+            # Show the original and processed image
+            #res = cv2.bitwise_and(frame, frame, mask=thresh2)
+            cv2.imshow('frame', visualize_fps(frame, fps))
+            cv2.imshow('thresh', visualize_fps(thresh2, fps))
+            # ----------------------------------------------------------------------
+            # record end time
+            end_time = time.time()
+            # calculate FPS
+            seconds = end_time - start_time
+            fps = 1.0 / seconds
+            
+            print(f"Central position: ({cx}, {cy})")
 
-                # find contours in the threshold image
-                (major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')
-                #print(major_ver, minor_ver, subminor_ver)
+            # Calculate the distance
+            target_x = 176
+            target_y = 126
+            distance = np.sqrt((cx - target_x) ** 2 + (cy - target_y) ** 2)
+            if distance != 0:
+                if cx < target_x:
+                    print("move right") #bot motion
+                if cx > target_x:
+                    print("move left")
+                if cy > target_y:
+                    print("move down") # ramp motion
+                if cy < target_y:
+                    print("move up") 
+            else:
+                print("Central position not found.")
+            #print("Estimated fps:{0:0.1f}".format(fps));
+            # if key pressed is 'Esc' then exit the loop
+            if cv2.waitKey(33) == 27:
+                break
+            
+    except Exception as e:
+        print(e)
 
-                # findContours() has different form for opencv2 and opencv3
-                if major_ver == "2" or major_ver == "3":
-                    _, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-                else:
-                    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-
-                # finding contour with maximum area and store it as best_cnt
-                max_area = 0
-                for cnt in contours:
-                    area = cv2.contourArea(cnt)
-                    if area > max_area:
-                        max_area = area
-                        best_cnt = cnt
-                        #print(hsv)
-                        # print("color = ",color)
-                    
-
-                # finding centroids of best_cnt and draw a circle there
-                if isset('best_cnt'):
-                    M = cv2.moments(best_cnt)
-                    cx,cy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
-                    cv2.circle(frame,(cx,cy),5,255,-1)
-                    # print("Central pos: (%d, %d)" % (cx,cy))
-                    
-                    hsv_pixel = hsv[cy,cx]
-                    color = check_colors(hsv_pixel)
-                    if color is not None:
-                        trigger = {'Red': 1, 'Green': 2, 'Blue': 3}[color]
-                        print("Detected color:", color)
-                        print((cx,cy))
-
-                else:
-                    trigger = 0
-                    # print("[Warning]Tag lost...")
-
-                # Show the original and processed image
-                #res = cv2.bitwise_and(frame, frame, mask=thresh2)
-                cv2.imshow('frame', visualize_fps(frame, fps))
-                cv2.imshow('thresh', visualize_fps(thresh2, fps))
-                # ----------------------------------------------------------------------
-                # record end time
-                end_time = time.time()
-                # calculate FPS
-                seconds = end_time - start_time
-                fps = 1.0 / seconds
-                #print("Estimated fps:{0:0.1f}".format(fps));
-                # if key pressed is 'Esc' then exit the loop
-                if cv2.waitKey(33) == 27:
-                    break
-                return(cx, cy)
-        except Exception as e:
-            print(e)
 
 
