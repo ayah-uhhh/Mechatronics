@@ -37,8 +37,8 @@ hsv_max = np.array((255, 255, 255))
 if color_state == 0: #GET THE PINKS 161 
     colors = []
     color_file = 'pink_hardcode.csv'
-    target_x = None
-    target_y = None
+    target_x = 176
+    target_y = 126
 
 if color_state == 1: #GET THE GREENS
     colors = []
@@ -195,6 +195,8 @@ def check_colors(pixel):
     for color, (lower, upper) in color_ranges.items():
         if np.all(pixel >= lower) and np.all(pixel <= upper):
             return color
+        else:
+            print("get the fuck out of the way")
     return None
 
 if __name__ == "__main__":
