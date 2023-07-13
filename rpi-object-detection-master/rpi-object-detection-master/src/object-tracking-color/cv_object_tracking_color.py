@@ -22,6 +22,7 @@ import cv2
 import numpy as np
 import time
 import csv
+import serial
 
 color_state = 2
 learning = 0
@@ -46,6 +47,27 @@ if color_state == 2: #GET THE BLUES 287, 161
     target_y = 163
 cx = None
 cy = None
+
+def error_check(cx, cy):
+    # Calculate the distance
+    
+    # distance = np.sqrt((cx - target_x) ** 2 + (cy - target_y) ** 2)
+    x_dist = abs(cx - target_x)
+    y_dist = abs(cy - target_y)
+    if x_dist > 10:
+        if cx < target_x:
+            print("move right") #bot motion
+        if cx > target_x:
+            print("move left")
+    else:
+        print("You got X!")
+    if y_dist > 10:
+        if cy > target_y:
+            print("move down") # ramp motion
+        if cy < target_y:
+            print("move up") 
+    else:
+        print("You got Y!")
 
 def isset(v):
     try:
@@ -270,28 +292,9 @@ if __name__ == "__main__":
             fps = 1.0 / seconds
             
             print(f"Central position: ({cx}, {cy})")
-
-            # Calculate the distance
-
-            # distance = np.sqrt((cx - target_x) ** 2 + (cy - target_y) ** 2)
-            x_dist = abs(cx - target_x)
-            y_dist = abs(cy - target_y)
-            if x_dist > 10:
-                if cx < target_x:
-                    print("move right") #bot motion
-                if cx > target_x:
-                    print("move left")
-            else:
-                print("You got X!")
-            if y_dist > 10:
-                if cy > target_y:
-                    print("move down") # ramp motion
-                if cy < target_y:
-                    print("move up") 
-            else:
-                print("You got Y!")
             #print("Estimated fps:{0:0.1f}".format(fps));
             # if key pressed is 'Esc' then exit the loop
+            error_check(cx,cy)
             if cv2.waitKey(33) == 27:
                 break
             
