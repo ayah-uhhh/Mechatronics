@@ -53,7 +53,7 @@ if color_state == 2: #GET THE BLUES 287, 161
     target_y = 163
 cx = None
 cy = None
-ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+#ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
 
 def motor_cmd(arg):
     ser.reset_input_buffer()
