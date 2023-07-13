@@ -20,7 +20,6 @@ int trigger = 0;
 int state; // 0 is right correction, 1 is left correction
 
 void setup() {
-  // put your setup code here, to run once:
 pinMode(49, INPUT);
 pinMode(51, INPUT);
 pinMode(53, INPUT);
@@ -47,9 +46,11 @@ Serial.begin(9600);
   }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
-   buttonState = digitalRead(buttonPin); 
+  if (Serial.available() > 0){
+    String cmd = Serial.readStringUntil('\n);
+    motor_cmd(cmd);
+  }
+  buttonState = digitalRead(buttonPin); 
   if (buttonState == HIGH) {
     trigger = trigger + 1;
      delay(500);
@@ -140,6 +141,10 @@ else
     BR_Forward(0);
   }
  
+}
+
+void motor_cmd(cmd){
+  
 }
 int SpeedConvert(int InputSpeed) {
   return(InputSpeed);
