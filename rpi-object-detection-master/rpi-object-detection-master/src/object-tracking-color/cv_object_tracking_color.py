@@ -61,25 +61,25 @@ def motor_cmd(arg):
 
 def error_check(cx, cy):
     # Calculate the distance
-    
-    # distance = np.sqrt((cx - target_x) ** 2 + (cy - target_y) ** 2)
-    x_dist = abs(cx - target_x)
-    y_dist = abs(cy - target_y)
-    if x_dist > 10:
-        if cx < target_x:
-            print("move right") #bot motion
-            #motor_cmd()
-        if cx > target_x:
-            print("move left")
-    else:
-        print("You got X!")
-    if y_dist > 10:
-        if cy > target_y:
-            print("move down") # ramp motion
-        if cy < target_y:
-            print("move up") 
-    else:
-        print("You got Y!")
+    if color_state == 1 or 2:
+        # distance = np.sqrt((cx - target_x) ** 2 + (cy - target_y) ** 2)
+        x_dist = abs(cx - target_x)
+        y_dist = abs(cy - target_y)
+        if x_dist > 10:
+            if cx < target_x:
+                print("move right") #bot motion
+                #motor_cmd()
+            if cx > target_x:
+                print("move left")
+        else:
+            print("You got X!")
+        if y_dist > 10:
+            if cy > target_y:
+                print("move down") # ramp motion
+            if cy < target_y:
+                print("move up") 
+        else:
+            print("You got Y!")
 
 def isset(v):
     try:
@@ -196,7 +196,7 @@ def check_colors(pixel):
         if np.all(pixel >= lower) and np.all(pixel <= upper):
             return color
         else:
-            print("get the fuck out of the way")
+            print("get out of the way")
     return None
 
 if __name__ == "__main__":
