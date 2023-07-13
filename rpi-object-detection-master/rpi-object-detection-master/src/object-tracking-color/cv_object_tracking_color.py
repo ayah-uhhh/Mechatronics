@@ -24,8 +24,8 @@ import time
 import csv
 import serial
 
-color_state = 2
-learning = 0
+color_state = 0
+learning = 1
 CAMERA_DEVICE_ID = 0
 IMAGE_WIDTH = 320
 IMAGE_HEIGHT = 240
@@ -33,6 +33,12 @@ fps = 0
 
 hsv_min = np.array((0, 0, 0))
 hsv_max = np.array((255, 255, 255))
+
+if color_state == 0: #GET THE PINKS
+    colors = []
+    color_file = 'pink_hardcode.csv'
+    target_x = 176
+    target_y = 126
 
 if color_state == 1: #GET THE GREENS
     colors = []
