@@ -47,6 +47,11 @@ if color_state == 2: #GET THE BLUES 287, 161
     target_y = 163
 cx = None
 cy = None
+ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+
+def motor_cmd(arg):
+    ser.reset_input_buffer()
+    ser.write(arg)
 
 def error_check(cx, cy):
     # Calculate the distance
@@ -57,6 +62,7 @@ def error_check(cx, cy):
     if x_dist > 10:
         if cx < target_x:
             print("move right") #bot motion
+            #motor_cmd()
         if cx > target_x:
             print("move left")
     else:
