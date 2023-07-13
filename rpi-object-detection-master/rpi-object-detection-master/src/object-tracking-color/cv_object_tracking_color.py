@@ -25,7 +25,7 @@ import csv
 import serial
 
 color_state = 0
-learning = 1
+learning = 0
 CAMERA_DEVICE_ID = 0
 IMAGE_WIDTH = 320
 IMAGE_HEIGHT = 240
@@ -34,11 +34,11 @@ fps = 0
 hsv_min = np.array((0, 0, 0))
 hsv_max = np.array((255, 255, 255))
 
-if color_state == 0: #GET THE PINKS
+if color_state == 0: #GET THE PINKS 161 
     colors = []
     color_file = 'pink_hardcode.csv'
-    target_x = 176
-    target_y = 126
+    target_x = None
+    target_y = None
 
 if color_state == 1: #GET THE GREENS
     colors = []
@@ -188,7 +188,7 @@ import pandas as pd
 color = None
 def check_colors(pixel):
     color_ranges = {
-        'Red': [(0, 0, 0), (30, 255, 255)],
+        'Red': [(150, 0, 0), (190, 255, 255)],
         'Green': [(40, 0, 0), (95, 255, 255)],
         'Blue': [(100, 0, 0), (130, 255, 255)]
     }
