@@ -60,7 +60,7 @@ def motor_cmd(arg):
     ser.write(arg)
     line = ser.readline().decode('utf-8').rstrip()
     print(line)
-    time sleep(1)
+    time.sleep(1)
 
 def error_check(cx, cy):
     # Calculate the distance
