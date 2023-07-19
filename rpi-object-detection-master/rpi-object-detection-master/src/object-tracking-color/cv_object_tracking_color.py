@@ -222,7 +222,7 @@ if __name__ == "__main__":
     
                         colors.append(tuple(row))
                     # print(colors)
-        while True:
+    while True:
             # ----------------------------------------------------------------------
             # record start time
             # start_time = time.time()--
