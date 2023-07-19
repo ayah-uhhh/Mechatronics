@@ -57,7 +57,7 @@ cy = None
 
 def motor_cmd(arg):
     ser.reset_input_buffer()
-    ser.write(b'arg')
+    ser.write(bytes(arg, 'utf-8'))
     print(arg)
     line = ser.readline().decode('utf-8').rstrip()
     print(line)
