@@ -238,7 +238,7 @@ if __name__ == "__main__":
             # hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) --
             # cv2.namedWindow('frame') --
             # cv2.setMouseCallback('frame', on_mouse_click, frame) --
-
+            command = "Hello"
             if ardcmd == 1:
                 motor_cmd(command)
 
