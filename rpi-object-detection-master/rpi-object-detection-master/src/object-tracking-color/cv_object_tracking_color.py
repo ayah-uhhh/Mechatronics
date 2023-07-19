@@ -205,7 +205,7 @@ def check_colors(pixel):
 if __name__ == "__main__":
     ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
     ser.reset_input_buffer()
-    ardcmd
+    ardcmd = 1
     try:
         # create video capture
         cap = cv2.VideoCapture(CAMERA_DEVICE_ID)
