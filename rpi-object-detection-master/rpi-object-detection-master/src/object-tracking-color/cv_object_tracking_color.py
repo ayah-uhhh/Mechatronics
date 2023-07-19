@@ -53,11 +53,14 @@ if color_state == 2: #GET THE BLUES 287, 161
     target_y = 163
 cx = None
 cy = None
-#ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+
 
 def motor_cmd(arg):
     ser.reset_input_buffer()
     ser.write(arg)
+    line = ser.readline().decode('utf-8').rstrip()
+    print(line)
+    time sleep(1)
 
 def error_check(cx, cy):
     # Calculate the distance
@@ -200,6 +203,9 @@ def check_colors(pixel):
     return None
 
 if __name__ == "__main__":
+    ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+    ser.reset_input_buffer()
+    ardcmd
     try:
         # create video capture
         cap = cv2.VideoCapture(CAMERA_DEVICE_ID)
@@ -231,6 +237,8 @@ if __name__ == "__main__":
             cv2.namedWindow('frame')
             cv2.setMouseCallback('frame', on_mouse_click, frame)
 
+            if ardcmd == 1:
+                motor_cmd(command)
 
         
             # Uncomment this for RED tag
