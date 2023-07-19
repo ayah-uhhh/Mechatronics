@@ -224,18 +224,18 @@ if __name__ == "__main__":
         while True:
             # ----------------------------------------------------------------------
             # record start time
-            start_time = time.time()
+            # start_time = time.time()--
             # Read the frames frome a camera
-            _, frame = cap.read()
-            frame = cv2.blur(frame,(3,3))
+            # _, frame = cap.read() --
+            # frame = cv2.blur(frame,(3,3))--
 
             # Or get it from a JPEG
             # frame = cv2.imread('frame0010.jpg', 1)
 
             # Convert the image to hsv space and find range of colors
-            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            cv2.namedWindow('frame')
-            cv2.setMouseCallback('frame', on_mouse_click, frame)
+            # hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) --
+            # cv2.namedWindow('frame') --
+            # cv2.setMouseCallback('frame', on_mouse_click, frame) --
 
             if ardcmd == 1:
                 motor_cmd(command)
