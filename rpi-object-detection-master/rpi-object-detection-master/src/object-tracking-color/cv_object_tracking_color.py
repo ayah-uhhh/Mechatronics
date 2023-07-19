@@ -72,16 +72,23 @@ def error_check(cx, cy):
         if x_dist > 10:
             if cx < target_x:
                 print("move right") #bot motion
-                #motor_cmd()
+                command = "right"
+                motor_cmd(command)
             if cx > target_x:
                 print("move left")
+                command = "left"
+                motor_cmd(command)
         else:
             print("You got X!")
         if y_dist > 10:
             if cy > target_y:
                 print("move down") # ramp motion
+                command = "down"
+                motor_cmd(command)
             if cy < target_y:
-                print("move up") 
+                print("move up")
+                command = "up"
+                motor_cmd(command)
         else:
             print("You got Y!")
 
@@ -242,6 +249,7 @@ if __name__ == "__main__":
             command = "Hello-"
             if ardcmd == 1:
                 motor_cmd(command)
+                ardcmd == 0
 
         
             # Uncomment this for RED tag
