@@ -206,9 +206,10 @@ if __name__ == "__main__":
     ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
     ser.reset_input_buffer()
     ardcmd = 1
-    if ardcmd == 0:
-        try:
-            # create video capture
+    
+    try:
+        # create video capture
+        if ardcmd == 0:
             cap = cv2.VideoCapture(CAMERA_DEVICE_ID)
     
             # set resolution to 320x240 to reduce latency 
@@ -221,8 +222,8 @@ if __name__ == "__main__":
                         row = [int(value) for value in row]
     
                         colors.append(tuple(row))
-                    # print(colors)
-    while True:
+                # print(colors)
+        while True:
             # ----------------------------------------------------------------------
             # record start time
             # start_time = time.time()--
