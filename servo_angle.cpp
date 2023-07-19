@@ -3,8 +3,8 @@
 #include <Servo.h>
 
 // Define the servo pins
-const int servoPin1 = 9;
-const int servoPin2 = 10;
+const int servoPin1 = 2;
+const int servoPin2 = 3;
 
 // Create servo objects
 Servo servo1;
