@@ -57,7 +57,7 @@ cy = None
 
 def motor_cmd(arg):
     ser.reset_input_buffer()
-    ser.write(bytes(arg))
+    ser.write(b'arg')
     line = ser.readline().decode('utf-8').rstrip()
     print(line)
     time.sleep(1)
