@@ -26,7 +26,7 @@ import serial
 
 color_state = 0
 learning = 0
-CAMERA_DEVICE_ID = 0
+#CAMERA_DEVICE_ID = 0
 IMAGE_WIDTH = 320
 IMAGE_HEIGHT = 240
 fps = 0
