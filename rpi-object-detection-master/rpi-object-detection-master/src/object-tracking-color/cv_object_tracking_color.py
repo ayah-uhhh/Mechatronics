@@ -26,7 +26,7 @@ import serial
 
 color_state = 0
 learning = 0
-#CAMERA_DEVICE_ID = 0
+CAMERA_DEVICE_ID = 0
 IMAGE_WIDTH = 320
 IMAGE_HEIGHT = 240
 fps = 0
@@ -206,21 +206,22 @@ if __name__ == "__main__":
     ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
     ser.reset_input_buffer()
     ardcmd = 1
-    try:
-        # create video capture
-        cap = cv2.VideoCapture(CAMERA_DEVICE_ID)
-
-        # set resolution to 320x240 to reduce latency 
-        cap.set(3, IMAGE_WIDTH)
-        cap.set(4, IMAGE_HEIGHT)
-        if learning == 0:
-            with open(color_file, 'r') as file:
-                csvreader = csv.reader(file)
-                for row in csvreader:
-                    row = [int(value) for value in row]
-
-                    colors.append(tuple(row))
-                # print(colors)
+    if ardcmd == 0:
+        try:
+            # create video capture
+            cap = cv2.VideoCapture(CAMERA_DEVICE_ID)
+    
+            # set resolution to 320x240 to reduce latency 
+            cap.set(3, IMAGE_WIDTH)
+            cap.set(4, IMAGE_HEIGHT)
+            if learning == 0:
+                with open(color_file, 'r') as file:
+                    csvreader = csv.reader(file)
+                    for row in csvreader:
+                        row = [int(value) for value in row]
+    
+                        colors.append(tuple(row))
+                    # print(colors)
         while True:
             # ----------------------------------------------------------------------
             # record start time
