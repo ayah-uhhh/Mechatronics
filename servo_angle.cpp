@@ -1,19 +1,19 @@
-%servo code maybe
 
 #include <Servo.h>
 
 // Define the servo pins
-const int servoPin1 = 2;
-const int servoPin2 = 3;
+const int servoPin1 = 9;
+//const int servoPin2 = 3;
 
 // Create servo objects
 Servo servo1;
-Servo servo2;
+//Servo servo2;
 
 void setup() {
+  Serial.begin(9600);
   // Attach servos to the respective pins
   servo1.attach(servoPin1);
-  servo2.attach(servoPin2);
+  //servo2.attach(servoPin2);
 }
 
 void loop() {
@@ -51,5 +51,5 @@ int readAngle() {
 void moveServos(int angle) {
   // Move both servos to the desired angle
   servo1.write(angle);
-  servo2.write(angle);
+  //servo2.write(-angle);
 }
