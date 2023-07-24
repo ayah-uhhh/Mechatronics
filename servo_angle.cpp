@@ -1,30 +1,32 @@
-
 #include <Servo.h>
 
-// Define the servo pins
+// Define the servo pin
 const int servoPin1 = 9;
-//const int servoPin2 = 3;
 
-// Create servo objects
+// Create servo object
 Servo servo1;
-//Servo servo2;
+
+int desiredAngle = 0;            // Variable to store the desired angle
+bool newAngleReceived = false;  // Flag to indicate if a new angle is received
 
 void setup() {
   Serial.begin(9600);
-  // Attach servos to the respective pins
+  // Attach servo to the pin
   servo1.attach(servoPin1);
-  //servo2.attach(servoPin2);
 }
 
 void loop() {
-  // Read the desired angle from the user
-  int desiredAngle = readAngle();
+  // Read the desired angle from the user if a new angle is not already received
+  if (!newAngleReceived) {
+    desiredAngle = readAngle();
+    newAngleReceived = true;
+  }
   
-  // Move both servos to the desired angle
-  moveServos(desiredAngle);
-  
-  // Delay before reading the next desired angle
-  delay(1000);
+  // Move the servo to the desired angle if a new angle is received
+  if (newAngleReceived) {
+    moveServo(desiredAngle);
+    newAngleReceived = false;
+  }
 }
 
 int readAngle() {
@@ -48,8 +50,7 @@ int readAngle() {
   }
 }
 
-void moveServos(int angle) {
-  // Move both servos to the desired angle
+void moveServo(int angle) {
+  // Move the servo to the desired angle
   servo1.write(angle);
-  //servo2.write(-angle);
 }
