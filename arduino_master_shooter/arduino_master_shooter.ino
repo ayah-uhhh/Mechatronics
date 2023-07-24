@@ -8,14 +8,15 @@ Servo servo1;
 
 int desiredAngle = 0;            // Variable to store the desired angle
 bool newAngleReceived = false;  // Flag to indicate if a new angle is received
+bool firerecieved = false;
 
 #define in1 4
 #define in2 5
 #define in3 6
 #define in4 7
-#define in5 8
+//#define in5 8
 
-int rotDirection = 0;
+int rotDirection = 0; //the rotation direction
 int pressed = false;
 
 void setup() {
@@ -23,7 +24,7 @@ void setup() {
   pinMode(in2, OUTPUT);
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
-  pinMode(in5, INPUT);
+  //pinMode(in5, INPUT);
   // Set initial rotation direction
   digitalWrite(in1, LOW);
   digitalWrite(in2, HIGH);
@@ -57,6 +58,7 @@ void loop() {
     }
     else if (data == "p") {
       fire(); // Call the fire function when the "pitch" command is received
+      firerecieved = true;
     }
     else if (data == "r") {
       // Set the desired angle to 0 degrees
@@ -81,15 +83,9 @@ void fire() {
   int potValue = analogRead(A0); // Read potentiometer value
   int pwmOutput = map(potValue, 0, 1023, 0, 255); // Map the potentiometer value from 0 to 255
 
-  // Read in5 - Debounce
-  if (digitalRead(in5) == true) {
-    pressed = !pressed;
-  }
-  while (digitalRead(in5) == true);
-  delay(20);
 
   // If in5 is pressed - change rotation direction
-  if (pressed == true & rotDirection == 0) {
+  if (firerecieved = true & rotDirection == 0) {
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
     digitalWrite(in3, HIGH);
@@ -98,7 +94,7 @@ void fire() {
     delay(20);
   }
   // If in5 is pressed - change rotation direction
-  if (pressed == false & rotDirection == 1) {
+  if (firerecieved = true & rotDirection == 1) {
     digitalWrite(in1, LOW);
     digitalWrite(in2, LOW);
     digitalWrite(in3, LOW);
