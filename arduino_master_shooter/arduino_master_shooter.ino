@@ -56,7 +56,7 @@ void loop() {
     Serial.print("You sent me: ");
     Serial.println(data);
 
-    if (data == "up") {
+    if (data == "u") {
       // Increase the angle by 5 degrees
       desiredAngle += 5;
       if (desiredAngle > 90) {
@@ -64,7 +64,7 @@ void loop() {
       }
       newAngleReceived = true; // Set the flag to move the servo to the new angle
     }
-    else if (data == "down") {
+    else if (data == "d") {
       // Decrease the angle by 5 degrees
       desiredAngle -= 5;
       if (desiredAngle < 0) {
@@ -72,10 +72,10 @@ void loop() {
       }
       newAngleReceived = true; // Set the flag to move the servo to the new angle
     }
-    else if (data == "fire") {
-      fire(); // Call the fire function when the "fire" command is received
+    else if (data == "p") {
+      fire(); // Call the fire function when the "pitch" command is received
     }
-    else if (data == "reset") {
+    else if (data == "r") {
       // Set the desired angle to 0 degrees
       desiredAngle = 0;
       newAngleReceived = true; // Set the flag to move the servo to the new angle
