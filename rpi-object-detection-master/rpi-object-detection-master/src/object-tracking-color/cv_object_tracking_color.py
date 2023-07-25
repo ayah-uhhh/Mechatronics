@@ -55,11 +55,15 @@ cx = None
 cy = None
 
 
-def motor_cmd(arg):
-    ser.reset_input_buffer()
-    ser.write(bytes(arg, 'utf-8'))
-    print(arg)
-    line = ser.readline().decode('utf-8').rstrip()
+def motor_cmd_s(arg):
+    ser_s.reset_input_buffer()
+    ser_s.write(bytes(arg, 'utf-8'))
+    line = ser_s.readline().decode('utf-8').rstrip()
+    time.sleep(1)
+def motor_cmd_m(arg):
+    ser_m.reset_input_buffer()
+    ser_m.writer(bytes(arg, 'utf-8'))
+    line = ser_m.readline().decode('utf-8').rstrip()
     print(line)
     time.sleep(1)
 
@@ -72,23 +76,25 @@ def error_check(cx, cy):
         if x_dist > 10:
             if cx < target_x:
                 print("move right") #bot motion
-                command = "right"
-                motor_cmd(command)
+                command = "r"
+                motor_cmd_m(command)
             if cx > target_x:
                 print("move left")
-                command = "left"
-                motor_cmd(command)
+                command = "l"
+                motor_cmd_m(command)
         else:
             print("You got X!")
+            command = "p"
+            motor_cmd_s(command)
         if y_dist > 10:
             if cy > target_y:
                 print("move down") # ramp motion
-                command = "down"
-                motor_cmd(command)
+                command = "d"
+                motor_cmd_s(command)
             if cy < target_y:
                 print("move up")
-                command = "up"
-                motor_cmd(command)
+                command = "u"
+                motor_cmd_s(command)
         else:
             print("You got Y!")
 
@@ -211,8 +217,10 @@ def check_colors(pixel):
     return None
 
 if __name__ == "__main__":
-    ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
-    ser.reset_input_buffer()
+    ser_s = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+    ser_m = serial.Serial('/dev/ttyACM1', 9600, timeout=1)
+    ser_s.reset_input_buffer()
+    ser_m.reset_input_buffer()
     ardcmd = 1
     
     try:
@@ -246,9 +254,29 @@ if __name__ == "__main__":
             # hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) --
             # cv2.namedWindow('frame') --
             # cv2.setMouseCallback('frame', on_mouse_click, frame) --
-            command = "Hello-"
             if ardcmd == 1:
-                motor_cmd(command)
+                print("ready")
+                time.sleep(3)
+                print("Move Left")
+                command = "l"
+                motor_cmd_s(command)
+                time.sleep(1)
+                print("Move Right")
+                command = "r"
+                motor_cmd_s(command)
+                time.sleep(1)
+                print("Move Up")
+                command = "u"
+                motor_cmd_s(command)
+                time.sleep(1)
+                print("Move Down")
+                command = "d"
+                motor_cmd_s(command)
+                time.sleep(1)
+                print("Fire")
+                command = "p"
+                motor_cmd_s(command)
+                time.sleep(1)
                 ardcmd == 0
 
         
