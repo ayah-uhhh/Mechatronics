@@ -31,7 +31,7 @@ void setup() {
 void loop() {
   delay(10);
   if (startangle == true) {
-    desiredAngle = 0;
+    desiredAngle = 35;
     startangle = false;
     newAngleReceived = true;
   }
@@ -57,15 +57,17 @@ void loop() {
       }
       newAngleReceived = true; // Set the flag to move the servo to the new angle
     }
-    else if (data == 'p') {
-      fire(); // Call the fire function when the "pitch" command is receivedp-
+    else if (data == 'y') {
+      fire(); // Call the fire function when the "pitch" command is received p
+      delay(10000);
+      kills();
     }
     else if (data == 'k') {
       kills(); // omg stop
     }
-    else if (data == 'r') {
-      // Set the desired angle to 0 degrees
-      desiredAngle = 0;
+    else if (data == 'q') {
+      // Set the desired angle to 35 degrees
+      desiredAngle = 35;
       newAngleReceived = true; // Set the flag to move the servo to the new angle
     }
   }
