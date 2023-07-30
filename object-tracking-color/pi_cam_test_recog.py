@@ -71,6 +71,8 @@ if color_state == 1: # this means we are targetting the TRIANGLE
 def error_check(x, y):
     cx=x;
     cy=y;
+    get_x = 0
+    get_y = 0
     if color_state == 1:
         target_x = 300
         target_y = 198
@@ -96,6 +98,7 @@ def error_check(x, y):
                 #motor_cmd_m(command)
         else:
             print("You got X!")
+            get_x = 1
         if y_dist > 10:
             if cy > target_y:
                 print("move down") # ramp motion
@@ -106,6 +109,8 @@ def error_check(x, y):
                  #motor_cmd_s(command)
         else:
             print("You got Y!")
+            get_y = 1
+    return(get_x, get_y)
 
 def motor_cmd_s(arg):
     ser_s.reset_input_buffer()
@@ -154,6 +159,10 @@ if __name__ == "__main__":
             # Start error check code
             error_check(x, y)
             
+            if error_check.get_x == 1 and error_check.get_y == 1:
+                print("Yeet")
+                motor_cmd_s('y')
+                send_command_and_ack(ser_s, 'y', 'Acky')
             ardcmd = 0
             """
                print("ready")
