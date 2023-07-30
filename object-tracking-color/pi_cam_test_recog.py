@@ -138,18 +138,18 @@ if __name__ == "__main__":
                 # Send 's' command to Arduino and wait for 'AckS'
             #print("start")
             time.sleep(3)
-            send_command_and_ack(ser_s, 's', 'AckS')
+            send_command_and_ack(ser_s, 's', 'Acks')
             
             # Send 'c' three times and wait for 'AckC' after each command
             for _ in range(3):
                 print("Corner")
                 motor_cmd_s('c')
-                send_command_and_ack(ser_s, 'c', 'AckC')
+                send_command_and_ack(ser_s, 'c', 'Ackc')
 
             # Send 'uuuuu' to Arduino and wait for 'AckUUUUU'
             print("Move up")
-            motor_cmd_s('uuuuu')
-            send_command_and_ack(ser_s, 'uuuuu', 'AckUUUUU')
+            motor_cmd_s('uuuuuu')
+            send_command_and_ack(ser_s, 'uuuuuu', 'Ackuuuuu')
 
             # Start error check code
             error_check(x, y)
