@@ -9,10 +9,10 @@ IMAGE_WIDTH = 320
 IMAGE_HEIGHT = 240
 counter = 1
 
-target_state = 1 #target state = 1 means target the triangle; 2 = circle; 3 = pins
+color_state = 1 #target state = 1 means target the triangle; 2 = circle; 3 = pins
 
-
-if target_state == 1: # this means we are targetting the TRIANGLE
+#def target_aim(color_state):
+if color_state == 1: # this means we are targetting the TRIANGLE
     cap = cv2.VideoCapture(0) # video capture source camera (Here webcam of laptop) 
     ret,frame = cap.read() # return a single frame in variable `frame`
     cv2.imwrite('shapes.jpg',frame)
@@ -106,3 +106,88 @@ def error_check(x, y):
                  #motor_cmd_s(command)
         else:
             print("You got Y!")
+
+def motor_cmd_s(arg):
+    ser_s.reset_input_buffer()
+    ser_s.write(bytes(arg, 'utf-8'))
+    line = ser_s.readline().decode('utf-8').rstrip()
+    time.sleep(1)
+
+def motor_cmd_m(arg):
+    ser_m.reset_input_buffer()
+    ser_m.writer(bytes(arg, 'utf-8'))
+    line = ser_m.readline().decode('utf-8').rstrip()
+    print(line)
+    time.sleep(1)
+    
+def send_command_and_ack(ser, command, ack):
+    ser.reset_input_buffer()
+    ser.write(bytes(command, 'utf-8'))
+    while ser.readline().decode('utf-8').rstrip() !=ack:
+        pass
+    time.sleep(1)
+
+if __name__ == "__main__":
+    ser_s = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+    ser_m = serial.Serial('/dev/ttyACM1', 9600, timeout=1)
+    ser_s.reset_input_buffer()
+    ser_m.reset_input_buffer()
+    ardcmd = 1
+    while True:
+            if ardcmd == 1:
+                # Send 's' command to Arduino and wait for 'AckS'
+            print("ready")
+            time.sleep(3)
+            send_command_and_ack(ser_s, 's', 'AckS')
+            
+            # Send 'c' three times and wait for 'AckC' after each command
+            for _ in range(3):
+                print("Move Left")
+                motor_cmd_s('l')
+                send_command_and_ack(ser_s, 'c', 'AckC')
+
+            # Send 'uuuuu' to Arduino and wait for 'AckUUUUU'
+            print("Move up")
+            motor_cmd_s('uuuuu')
+            send_command_and_ack(ser_s, 'uuuuu', 'AckUUUUU')
+
+            # Start error check code
+            error_check(x, y)
+            
+            ardcmd = 0
+            """
+               print("ready")
+                time.sleep(3)
+                print("Move Left") #moves wheels to the left, with respect of the camera
+                command = "l"
+                motor_cmd_s(command)
+                time.sleep(1)
+                print("Move Right") #moves wheels to the right, with respect of the camera
+                command = "r"
+                motor_cmd_s(command)
+                time.sleep(1)
+                print("Move Up") #moves the angle of the servo up 5 degrees
+                command = "u"
+                motor_cmd_s(command)
+                time.sleep(1)
+                print("Move Down") #moves the angle of the servo down 5 degrees
+                command = "d"
+                motor_cmd_s(command)
+                time.sleep(1)
+                print("Yeet") #turns on shooting motors
+                command = "y"
+                motor_cmd_s(command)
+                time.sleep(1)
+                print("Zero") # the angle of the servo goes to zero
+                command = "z"
+                motor_cmd_s(command)
+                time.sleep(1)
+                print("Kill") #turns off shooting motors
+                command = "k"
+                motor_cmd_s(command)
+                time.sleep(1)
+                print("Start") #takes in button push, begin to drive to first target
+                command = "s"
+                motor_cmd_s(command)
+                ardcmd == 0
+                """
