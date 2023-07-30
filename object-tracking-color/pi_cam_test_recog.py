@@ -134,16 +134,16 @@ if __name__ == "__main__":
     ser_m.reset_input_buffer()
     ardcmd = 1
     while True:
-            if ardcmd == 1:
+        if ardcmd == 1:
                 # Send 's' command to Arduino and wait for 'AckS'
-            print("ready")
+            #print("start")
             time.sleep(3)
             send_command_and_ack(ser_s, 's', 'AckS')
             
             # Send 'c' three times and wait for 'AckC' after each command
             for _ in range(3):
-                print("Move Left")
-                motor_cmd_s('l')
+                print("Corner")
+                motor_cmd_s('c')
                 send_command_and_ack(ser_s, 'c', 'AckC')
 
             # Send 'uuuuu' to Arduino and wait for 'AckUUUUU'
