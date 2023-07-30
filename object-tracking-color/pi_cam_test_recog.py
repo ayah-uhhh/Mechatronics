@@ -74,8 +74,8 @@ def error_check(x, y):
     get_x = 0
     get_y = 0
     if color_state == 1:
-        target_x = 300
-        target_y = 198
+        target_x = 325
+        target_y = 256
     if color_state == 2: #will be updated
         target_x = -1
         target_y = -1
@@ -87,7 +87,7 @@ def error_check(x, y):
         # distance = np.sqrt((cx - target_x) ** 2 + (cy - target_y) ** 2)
         x_dist = abs(cx - target_x)
         y_dist = abs(cy - target_y)
-        if x_dist > 10:
+        if x_dist > 5:
             if cx < target_x:
                 print("move right") #bot motion
                 command = "r"
@@ -99,7 +99,7 @@ def error_check(x, y):
         else:
             print("You got X!")
             get_x = 1
-        if y_dist > 10:
+        if y_dist > 5:
             if cy > target_y:
                 print("move down") # ramp motion
                 command = "d"
@@ -152,9 +152,10 @@ if __name__ == "__main__":
                 send_command_and_ack(ser_s, 'c', 'Ackc')
 
             # Send 'uuuuu' to Arduino and wait for 'AckUUUUU'
-            print("Move up")
-            motor_cmd_s('uuuuuu')
-            send_command_and_ack(ser_s, 'uuuuuu', 'Ackuuuuu')
+            for _ in range(7):
+                print("Move up")
+                motor_cmd_s('u')
+                send_command_and_ack(ser_s, 'u', 'Acku')
 
             # Start error check code
             error_check(x, y)
