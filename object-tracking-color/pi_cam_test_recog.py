@@ -106,7 +106,7 @@ def error_check(x, y):
                 #motor_cmd_s(command)
             if cy < target_y:
                 print("move up")
-                 #motor_cmd_s(command)
+                #motor_cmd_s(command)
         else:
             print("You got Y!")
             get_y = 1
@@ -122,13 +122,13 @@ def motor_cmd_m(arg):
     ser_m.reset_input_buffer()
     ser_m.writer(bytes(arg, 'utf-8'))
     line = ser_m.readline().decode('utf-8').rstrip()
-    print(line)
+    #print(line)
     time.sleep(1)
     
 def send_command_and_ack(ser, command, ack):
     ser.reset_input_buffer()
     ser.write(bytes(command, 'utf-8'))
-    while ser.readline().decode('utf-8').rstrip() !=ack:
+    while ser.readline().decode('utf-8').rstrip() !=ack: #this will change based on what "ack" you place in the function
         pass
     time.sleep(1)
 
@@ -143,13 +143,13 @@ if __name__ == "__main__":
                 # Send 's' command to Arduino and wait for 'AckS'
             #print("start")
             time.sleep(3)
-            send_command_and_ack(ser_s, 's', 'Acks')
+            send_command_and_ack(ser_m, 's', 'Acks')
             
             # Send 'c' three times and wait for 'AckC' after each command
             for _ in range(3):
                 print("Corner")
                 motor_cmd_s('c')
-                send_command_and_ack(ser_s, 'c', 'Ackc')
+                send_command_and_ack(ser_m, 'c', 'Ackc')
 
             # Send 'uuuuu' to Arduino and wait for 'AckUUUUU'
             for _ in range(7):
@@ -164,7 +164,6 @@ if __name__ == "__main__":
                 print("Yeet")
                 motor_cmd_s('y')
                 send_command_and_ack(ser_s, 'y', 'Acky')
-            ardcmd = 0
             """
                print("ready")
                 time.sleep(3)
