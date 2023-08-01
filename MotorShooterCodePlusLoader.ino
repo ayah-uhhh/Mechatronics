@@ -38,7 +38,7 @@ void loop() {
   }
   
   if (Serial.available() > 0) {
-    int data = Serial.read(); //letter then dash
+    char data = Serial.read(); //letter then dash
     Serial.print("Ack");
     Serial.println(data);
 
