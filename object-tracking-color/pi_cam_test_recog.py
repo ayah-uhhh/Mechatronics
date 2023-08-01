@@ -11,6 +11,26 @@ counter = 1
 
 color_state = 1 #target state = 1 means target the triangle; 2 = circle; 3 = pins
 
+def motor_cmd_s(arg):
+    ser_s.reset_input_buffer()
+    ser_s.write(bytes(arg, 'utf-8'))
+    line = ser_s.readline().decode('utf-8').rstrip()
+    time.sleep(1)
+
+def motor_cmd_m(arg):
+    ser_m.reset_input_buffer()
+    ser_m.writer(bytes(arg, 'utf-8'))
+    line = ser_m.readline().decode('utf-8').rstrip()
+    #print(line)
+    time.sleep(1)
+    
+def send_command_and_ack(ser, command, ack):
+    ser.reset_input_buffer()
+    ser.write(bytes(command, 'utf-8'))
+    while ser.readline().decode('utf-8').rstrip() !=ack: #this will change based on what "ack" you place in the function
+        pass
+    time.sleep(1)
+
 #def target_aim(color_state):
 if color_state == 1: # this means we are targetting the TRIANGLE
     cap = cv2.VideoCapture(0) # video capture source camera (Here webcam of laptop) 
@@ -30,7 +50,7 @@ if color_state == 1: # this means we are targetting the TRIANGLE
     # Define lower and upper bounds for green color in HSV
     lower_green = (30,100,100)
     upper_green = (80,215,215)
-    print(lower_green)
+    #print(lower_green)
     #print(upper_green)
 
     # Create a binary mask for the green color
@@ -91,11 +111,13 @@ def error_check(x, y):
             if cx < target_x:
                 print("move right") #bot motion
                 command = "r"
-                #motor_cmd_m(command)
+                time.sleep(2)
+                motor_cmd_m(command)
             if cx > target_x:
                 print("move left")
                 command = "l"
-                #motor_cmd_m(command)
+                time.sleep(2)
+                motor_cmd_m(command)
         else:
             print("You got X!")
             get_x = 1
@@ -103,34 +125,16 @@ def error_check(x, y):
             if cy > target_y:
                 print("move down") # ramp motion
                 command = "d"
-                #motor_cmd_s(command)
+                time.sleep(1)
+                motor_cmd_s(command)
             if cy < target_y:
                 print("move up")
-                #motor_cmd_s(command)
+                time.sleep(1)
+                motor_cmd_s(command)
         else:
             print("You got Y!")
             get_y = 1
     return(get_x, get_y)
-
-def motor_cmd_s(arg):
-    ser_s.reset_input_buffer()
-    ser_s.write(bytes(arg, 'utf-8'))
-    line = ser_s.readline().decode('utf-8').rstrip()
-    time.sleep(1)
-
-def motor_cmd_m(arg):
-    ser_m.reset_input_buffer()
-    ser_m.writer(bytes(arg, 'utf-8'))
-    line = ser_m.readline().decode('utf-8').rstrip()
-    #print(line)
-    time.sleep(1)
-    
-def send_command_and_ack(ser, command, ack):
-    ser.reset_input_buffer()
-    ser.write(bytes(command, 'utf-8'))
-    while ser.readline().decode('utf-8').rstrip() !=ack: #this will change based on what "ack" you place in the function
-        pass
-    time.sleep(1)
 
 if __name__ == "__main__":
     ser_s = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
@@ -148,7 +152,7 @@ if __name__ == "__main__":
             # Send 'c' three times and wait for 'AckC' after each command
             for _ in range(3):
                 print("Corner")
-                motor_cmd_s('c')
+                motor_cmd_m('c')
                 send_command_and_ack(ser_m, 'c', 'Ackc')
 
             # Send 'uuuuu' to Arduino and wait for 'AckUUUUU'
