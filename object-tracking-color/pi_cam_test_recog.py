@@ -156,7 +156,7 @@ if __name__ == "__main__":
                 send_command_and_ack(ser_m, 'c', 'Ackc')
 
             # Send 'uuuuu' to Arduino and wait for 'AckUUUUU'
-            for _ in range(7):
+            for _ in range(5):
                 print("Move up")
                 motor_cmd_s('u')
                 send_command_and_ack(ser_s, 'u', 'Acku')
