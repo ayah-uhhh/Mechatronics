@@ -94,8 +94,8 @@ def error_check(x, y):
     get_x = 0
     get_y = 0
     if color_state == 1:
-        target_x = 325
-        target_y = 256
+        target_x = 313
+        target_y = 182
     if color_state == 2: #will be updated
         target_x = -1
         target_y = -1
