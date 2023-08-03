@@ -1,8 +1,8 @@
 #code that doesn't matter anymore
-arduino_master_shooter
-arduino_master_shooter_final
-MotorShootorCode
-motorshootercode_2
+arduino_master_shooter.ino
+arduino_master_shooter_final.ino
+MotorShootorCode.ino
+motorshootercode_2.ino
 rpi-object-detection-master 
 spitest.py
 servo_angle.cpp
