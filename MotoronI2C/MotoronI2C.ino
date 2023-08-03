@@ -33,10 +33,10 @@ const int FrontControllerAddress = 15;
 const int BackControllerAddress = 16;
 const int RightMotor = 1;
 const int LeftMotor = 2;
-const int DefaultSpeed = 500;
+const int DefaultSpeed = 300;
 const int DefaultAcceleration = 100;
 const int DefaultDeceleration = 100;
-const int DefaultCommandTimeout = 300;
+const int DefaultCommandTimeout = 100;
 
 // This code creates an object for each Motoron controller.
 // The number passed as the first argument to each constructor
@@ -64,6 +64,9 @@ void setupMotoron(MotoronI2C & mc) {
   // mc.disableCommandTimeout();
 }
 
+/*
+*/
+
 void setup() {
   Wire.begin();
   Serial.begin(9600);
@@ -84,8 +87,7 @@ void setup() {
 
   BackCtrl.setMaxAcceleration(RightMotor, DefaultAcceleration);
   BackCtrl.setMaxDeceleration(RightMotor, DefaultDeceleration);
-/*
-*/
+
   pinMode(FrontCornerInner, INPUT);           // set pin to input
   pinMode(FrontCornerOuter, INPUT);           // set pin to input
   pinMode(FrontSideInner  , INPUT);           // set pin to input
@@ -95,8 +97,7 @@ void setup() {
   pinMode(BackSideInner   , INPUT);           // set pin to input
   pinMode(BackSideOuter   , INPUT);           // set pin to input
 
-  Serial.println("Hello World!!!2");
-  //Serial.write('Y');
+  Serial.println("Hello World!!!4");
 
 }
 
@@ -108,21 +109,35 @@ void loop() {
 
     //Serial.write(SerialCommand);
     switch (SerialCommand) {
+      case 'L': // Pivot left by shifting the back (shooter perspective) right
+        FrontCtrl.setSpeed(LeftMotor, -(DefaultSpeed/2));
+        FrontCtrl.setSpeed(RightMotor, 0);
+        BackCtrl.setSpeed(LeftMotor, -(DefaultSpeed/2));
+        BackCtrl.setSpeed(RightMotor, 0);
+        Serial.println("AckR");
+      break;
+      case 'R': // Pivot right by shifting the back (shooter perspective) left
+        FrontCtrl.setSpeed(LeftMotor, (DefaultSpeed/2));
+        FrontCtrl.setSpeed(RightMotor, 0);
+        BackCtrl.setSpeed(LeftMotor, (DefaultSpeed/2));
+        BackCtrl.setSpeed(RightMotor, 0);
+        Serial.println("AckL");
+      break;
       //case 'd': // Backward
       case 'r': // Backward
-        Serial.println("Ackr");
         FrontCtrl.setSpeed(LeftMotor, -DefaultSpeed);
         FrontCtrl.setSpeed(RightMotor, -DefaultSpeed);
         BackCtrl.setSpeed(LeftMotor, -DefaultSpeed);
         BackCtrl.setSpeed(RightMotor, -DefaultSpeed);
+        Serial.println("Ackr");
       break;
       //case 'f': // Forward
       case 'l': // Forward
-        Serial.println("Ackl");
         FrontCtrl.setSpeed(LeftMotor, DefaultSpeed);
         FrontCtrl.setSpeed(RightMotor, DefaultSpeed);
         BackCtrl.setSpeed(LeftMotor, DefaultSpeed);
         BackCtrl.setSpeed(RightMotor, DefaultSpeed);
+        Serial.println("Ackl");
       break;
       /*
       //case 'a': // Strafe left
