@@ -4,14 +4,14 @@
 #include <Motoron.h>
 
 // Define the GPIO ports
-const int FrontCornerInner = 2;  // These are all digital inputs
-const int FrontCornerOuter = 3;
-const int FrontSideInner   = 4;
-const int FrontSideOuter   = 5;
-const int BackCornerInner  = 6;
-const int BackCornerOuter  = 7;
-const int BackSideInner    = 8;
-const int BackSideOuter    = 9;
+const int FrontCornerOuter = 45; // These are the IR line sensor digital inputs
+const int FrontCornerInner = 44;
+const int FrontSideInner   = 43;
+const int FrontSideOuter   = 42;
+const int BackSideOuter    = 49;
+const int BackSideInner    = 48;
+const int BackCornerInner  = 47;
+const int BackCornerOuter  = 46;
 
 // Define the analog GPIO ports and associated constants
 #define ADC_STEPS        (1024)
@@ -29,11 +29,11 @@ int TriggerButton1;  // The "Trigger" bits here are set on the initial
 int TriggerButton2;  //   press of the corresponding button
 
 // Define the Motoron motor controller constants
-const int FrontControllerAddress = 15;
-const int BackControllerAddress = 16;
-const int RightMotor = 1;
-const int LeftMotor = 2;
-const int DefaultSpeed = 300;
+const int LeftControllerAddress = 15;
+const int RightControllerAddress = 16;
+const int FrontMotor = 1;
+const int BackMotor = 2;
+const int DefaultSpeed = 400;
 const int DefaultAcceleration = 100;
 const int DefaultDeceleration = 100;
 const int DefaultCommandTimeout = 100;
@@ -41,8 +41,8 @@ const int DefaultCommandTimeout = 100;
 // This code creates an object for each Motoron controller.
 // The number passed as the first argument to each constructor
 // below should be the 7-bit I2C address of the controller.
-MotoronI2C FrontCtrl(FrontControllerAddress);
-MotoronI2C BackCtrl(BackControllerAddress);
+MotoronI2C LeftCtrl(LeftControllerAddress);
+MotoronI2C RightCtrl(RightControllerAddress);
 
 // You can call functions directly on each of the objects
 // created above (mc1, mc2, etc.) but if you want to write
@@ -55,13 +55,6 @@ void setupMotoron(MotoronI2C & mc) {
   // Clear the reset flag, which is set after the controller
   // reinitializes and counts as an error.
   mc.clearResetFlag();
-
-  // By default, the Motoron is configured to stop the motors if
-  // it does not get a motor control command for 1500 ms.  You
-  // can uncomment a line below to adjust this time or disable
-  // the timeout feature.
-  // mc.setCommandTimeoutMilliseconds(1000);
-  // mc.disableCommandTimeout();
 }
 
 /*
@@ -70,23 +63,24 @@ void setupMotoron(MotoronI2C & mc) {
 void setup() {
   Wire.begin();
   Serial.begin(9600);
-  setupMotoron(FrontCtrl);
-  setupMotoron(BackCtrl);
 
-  FrontCtrl.setCommandTimeoutMilliseconds(DefaultCommandTimeout);
-  BackCtrl.setCommandTimeoutMilliseconds(DefaultCommandTimeout);
+  setupMotoron(LeftCtrl);
+  setupMotoron(RightCtrl);
 
-  FrontCtrl.setMaxAcceleration(LeftMotor, DefaultAcceleration);
-  FrontCtrl.setMaxDeceleration(LeftMotor, DefaultDeceleration);
+  LeftCtrl.setCommandTimeoutMilliseconds(DefaultCommandTimeout);
+  RightCtrl.setCommandTimeoutMilliseconds(DefaultCommandTimeout);
 
-  FrontCtrl.setMaxAcceleration(RightMotor, DefaultAcceleration);
-  FrontCtrl.setMaxDeceleration(RightMotor, DefaultDeceleration);
+  LeftCtrl.setMaxAcceleration(FrontMotor, DefaultAcceleration);
+  LeftCtrl.setMaxDeceleration(FrontMotor, DefaultDeceleration);
 
-  BackCtrl.setMaxAcceleration(LeftMotor, DefaultAcceleration);
-  BackCtrl.setMaxDeceleration(LeftMotor, DefaultDeceleration);
+  LeftCtrl.setMaxAcceleration(BackMotor, DefaultAcceleration);
+  LeftCtrl.setMaxDeceleration(BackMotor, DefaultDeceleration);
 
-  BackCtrl.setMaxAcceleration(RightMotor, DefaultAcceleration);
-  BackCtrl.setMaxDeceleration(RightMotor, DefaultDeceleration);
+  RightCtrl.setMaxAcceleration(FrontMotor, DefaultAcceleration);
+  RightCtrl.setMaxDeceleration(FrontMotor, DefaultDeceleration);
+
+  RightCtrl.setMaxAcceleration(BackMotor, DefaultAcceleration);
+  RightCtrl.setMaxDeceleration(BackMotor, DefaultDeceleration);
 
   pinMode(FrontCornerInner, INPUT);           // set pin to input
   pinMode(FrontCornerOuter, INPUT);           // set pin to input
@@ -97,12 +91,17 @@ void setup() {
   pinMode(BackSideInner   , INPUT);           // set pin to input
   pinMode(BackSideOuter   , INPUT);           // set pin to input
 
-  Serial.println("Hello World!!!4");
+  Serial.println("Hello World!!!");
 
 }
 
 void loop() {
   delay(10);
+
+//  FrontLeftGo(DefaultSpeed);
+//  BackLeftGo(DefaultSpeed);
+//  FrontRightGo(DefaultSpeed);
+//  BackRightGo(DefaultSpeed);
 
   if (Serial.available()) {
     int SerialCommand = Serial.read();
@@ -110,62 +109,62 @@ void loop() {
     //Serial.write(SerialCommand);
     switch (SerialCommand) {
       case 'L': // Pivot left by shifting the back (shooter perspective) right
-        FrontCtrl.setSpeed(LeftMotor, -(DefaultSpeed/2));
-        FrontCtrl.setSpeed(RightMotor, 0);
-        BackCtrl.setSpeed(LeftMotor, -(DefaultSpeed/2));
-        BackCtrl.setSpeed(RightMotor, 0);
+        FrontLeftGo(-(DefaultSpeed/2));
+        BackLeftGo(0);
+        FrontRightGo(-(DefaultSpeed/2));
+        BackRightGo(0);
         Serial.println("AckR");
       break;
       case 'R': // Pivot right by shifting the back (shooter perspective) left
-        FrontCtrl.setSpeed(LeftMotor, (DefaultSpeed/2));
-        FrontCtrl.setSpeed(RightMotor, 0);
-        BackCtrl.setSpeed(LeftMotor, (DefaultSpeed/2));
-        BackCtrl.setSpeed(RightMotor, 0);
+        FrontLeftGo((DefaultSpeed/2));
+        BackLeftGo(0);
+        FrontRightGo((DefaultSpeed/2));
+        BackRightGo(0);
         Serial.println("AckL");
       break;
       //case 'd': // Backward
       case 'r': // Backward
-        FrontCtrl.setSpeed(LeftMotor, -DefaultSpeed);
-        FrontCtrl.setSpeed(RightMotor, -DefaultSpeed);
-        BackCtrl.setSpeed(LeftMotor, -DefaultSpeed);
-        BackCtrl.setSpeed(RightMotor, -DefaultSpeed);
+        FrontLeftGo(-DefaultSpeed);
+        BackLeftGo(-DefaultSpeed);
+        FrontRightGo(-DefaultSpeed);
+        BackRightGo(-DefaultSpeed);
         Serial.println("Ackr");
       break;
       //case 'f': // Forward
       case 'l': // Forward
-        FrontCtrl.setSpeed(LeftMotor, DefaultSpeed);
-        FrontCtrl.setSpeed(RightMotor, DefaultSpeed);
-        BackCtrl.setSpeed(LeftMotor, DefaultSpeed);
-        BackCtrl.setSpeed(RightMotor, DefaultSpeed);
+        FrontLeftGo(DefaultSpeed);
+        BackLeftGo(DefaultSpeed);
+        FrontRightGo(DefaultSpeed);
+        BackRightGo(DefaultSpeed);
         Serial.println("Ackl");
       break;
       /*
       //case 'a': // Strafe left
       case 'l': // Strafe left
-        FrontCtrl.setSpeed(LeftMotor, -DefaultSpeed);
-        FrontCtrl.setSpeed(RightMotor, DefaultSpeed);
-        BackCtrl.setSpeed(LeftMotor, DefaultSpeed);
-        BackCtrl.setSpeed(RightMotor, -DefaultSpeed);
+        LeftCtrl.setSpeed(FrontMotor, -DefaultSpeed);
+        LeftCtrl.setSpeed(BackMotor, DefaultSpeed);
+        RightCtrl.setSpeed(FrontMotor, DefaultSpeed);
+        RightCtrl.setSpeed(BackMotor, -DefaultSpeed);
       break;
       //case 's': // Strafe right
       case 'r': // Strafe right
-        FrontCtrl.setSpeed(LeftMotor, DefaultSpeed);
-        FrontCtrl.setSpeed(RightMotor, -DefaultSpeed);
-        BackCtrl.setSpeed(LeftMotor, -DefaultSpeed);
-        BackCtrl.setSpeed(RightMotor, DefaultSpeed);
+        LeftCtrl.setSpeed(FrontMotor, DefaultSpeed);
+        LeftCtrl.setSpeed(BackMotor, -DefaultSpeed);
+        RightCtrl.setSpeed(FrontMotor, -DefaultSpeed);
+        RightCtrl.setSpeed(BackMotor, DefaultSpeed);
       break;
       /*
       case 'e': // Pivot left
-        FrontCtrl.setSpeed(LeftMotor, 0);
-        FrontCtrl.setSpeed(RightMotor, DefaultSpeed);
-        BackCtrl.setSpeed(LeftMotor, 0);
-        BackCtrl.setSpeed(RightMotor, DefaultSpeed);
+        LeftCtrl.setSpeed(FrontMotor, 0);
+        LeftCtrl.setSpeed(BackMotor, DefaultSpeed);
+        RightCtrl.setSpeed(FrontMotor, 0);
+        RightCtrl.setSpeed(BackMotor, DefaultSpeed);
       break;
       case 'r': // Pivot right
-        FrontCtrl.setSpeed(LeftMotor, DefaultSpeed);
-        FrontCtrl.setSpeed(RightMotor, 0);
-        BackCtrl.setSpeed(LeftMotor, DefaultSpeed);
-        BackCtrl.setSpeed(RightMotor, 0);
+        LeftCtrl.setSpeed(FrontMotor, DefaultSpeed);
+        LeftCtrl.setSpeed(BackMotor, 0);
+        RightCtrl.setSpeed(FrontMotor, DefaultSpeed);
+        RightCtrl.setSpeed(BackMotor, 0);
       break;
       case 'q':
       break;
@@ -177,4 +176,21 @@ void loop() {
     }
   }
 }
+
+void FrontLeftGo(int Speed) {
+  LeftCtrl.setSpeed(FrontMotor, -Speed);
+}
+
+void FrontRightGo(int Speed) {
+  RightCtrl.setSpeed(FrontMotor, Speed);
+}
+
+void BackLeftGo(int Speed) {
+  LeftCtrl.setSpeed(BackMotor, -Speed);
+}
+
+void BackRightGo(int Speed) {
+  RightCtrl.setSpeed(BackMotor, Speed);
+}
+
 
