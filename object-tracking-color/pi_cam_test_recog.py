@@ -111,12 +111,12 @@ def error_check(x, y):
         x_dist = abs(cx - target_x)
         y_dist = abs(cy - target_y)
         if x_dist > 5:
-            if cx < target_x:
+            if cx > target_x:
                 print("move right") #bot motion
                 command = "r"
                 time.sleep(2)
                 motor_cmd_m(command)
-            if cx > target_x:
+            if cx < target_x:
                 print("move left")
                 command = "l"
                 time.sleep(2)
