@@ -152,7 +152,7 @@ if __name__ == "__main__":
             send_command_and_ack(ser_m, 's', 'Acks')
             
             # Send 'c' three times and wait for 'AckC' after each command
-            for _ in range(3):
+            for _ in range(1):
                 print("Corner")
                 motor_cmd_m('c')
                 send_command_and_ack(ser_m, 'c', 'Ackc')
