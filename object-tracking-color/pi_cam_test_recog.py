@@ -10,6 +10,7 @@ IMAGE_HEIGHT = 240
 counter = 1
 
 color_state = 1 #target state = 1 means target the triangle; 2 = circle; 3 = pins
+target_aquired = 0
 
 def motor_cmd_s(arg):
     ser_s.reset_input_buffer()
@@ -83,6 +84,7 @@ if color_state == 1: # this means we are targetting the TRIANGLE
         cv2.circle(img,(x,y),5,255,-1)
         print(x)
         print(y)
+        target_aquired = 1 #have it add one so we know to move on to the next target????
 
     cv2.imshow("Shapes", img)
     cv2.waitKey(0)
