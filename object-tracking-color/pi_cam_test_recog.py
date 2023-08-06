@@ -84,7 +84,7 @@ if color_state == 1: # this means we are targetting the TRIANGLE
         cv2.circle(img,(x,y),5,255,-1)
         print(x)
         print(y)
-        target_aquired = 1 #have it add one so we know to move on to the next target????
+        target_aquired = 1 #have it add one so we know to move on to the next target???? 
 
     cv2.imshow("Shapes", img)
     cv2.waitKey(0)
@@ -170,6 +170,9 @@ if __name__ == "__main__":
                 print("Yeet")
                 motor_cmd_s('y')
                 send_command_and_ack(ser_s, 'y', 'Acky')
+                ardcmd =+ 1
+        if ardcmd == 2: #maybe this will be the next target
+            time.sleep(3)
             """
                print("ready")
                 time.sleep(3)
