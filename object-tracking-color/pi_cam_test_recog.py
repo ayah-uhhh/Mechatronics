@@ -73,7 +73,7 @@ if color_state == 1: # this means we are targetting the TRIANGLE
     # Create a new blank image
 
     for cnt in contours:
-    img = cv2.drawContours(img, [cnt], -1, (0,255,255), 3)
+        img = cv2.drawContours(img, [cnt], -1, (0,255,255), 3)
 
     # compute the center of mass of the triangle
     M = cv2.moments(cnt)
