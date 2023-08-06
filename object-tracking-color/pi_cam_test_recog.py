@@ -29,6 +29,7 @@ def send_command_and_ack(ser, command, ack):
     ser.reset_input_buffer()
     ser.write(bytes(command, 'utf-8'))
     while ser.readline().decode('utf-8').rstrip() !=ack: #this will change based on what "ack" you place in the function
+        print(ser.readline().decode('utf-8').rstrip())
         pass
     time.sleep(1)
 
