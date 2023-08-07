@@ -1,44 +1,63 @@
+# Import necessary libraries
 import cv2
 import numpy as np
 import time
 import csv
 import serial
 
+# Set up camera and image properties
 CAMERA_DEVICE_ID = 0
 IMAGE_WIDTH = 320
 IMAGE_HEIGHT = 240
 counter = 1
 
-color_state = 1 #target state = 1 means target the triangle; 2 = circle; 3 = pins
+# Define target state: 1 for triangle, 2 for circle, 3 for pins
+color_state = 1 
 target_aquired = 0
 
+# Define function for small motor commands, aiming
 def motor_cmd_s(arg):
+    # Reset input buffer for serial communication with small motor (ser_s)
     ser_s.reset_input_buffer()
+    # Write command to the small motor
     ser_s.write(bytes(arg, 'utf-8'))
+    # Read the acknowledgment response from the small motor
     line = ser_s.readline().decode('utf-8').rstrip()
+    # Sleep for 1 second after the command
     time.sleep(1)
 
+# Define function for medium motor commands, driving
 def motor_cmd_m(arg):
+    # Reset input buffer for serial communication with medium motor (ser_m)
     ser_m.reset_input_buffer()
-    ser_m.writer(bytes(arg, 'utf-8'))
+    # Write command to the medium motor
+    ser_m.write(bytes(arg, 'utf-8'))
+    # Read the acknowledgment response from the medium motor
     line = ser_m.readline().decode('utf-8').rstrip()
-    #print(line)
+    # Sleep for 1 second after the command
     time.sleep(1)
     
+# Define function to send a command and wait for acknowledgment
 def send_command_and_ack(ser, command, ack):
+    # Reset input buffer for serial communication with given serial object (ser)
     ser.reset_input_buffer()
+    # Write command to the serial object
     ser.write(bytes(command, 'utf-8'))
-    while ser.readline().decode('utf-8').rstrip() !=ack: #this will change based on what "ack" you place in the function
+    # Wait until the acknowledgment response matches the provided ack parameter
+    while ser.readline().decode('utf-8').rstrip() != ack: # This will change based on what "ack" you place in the function
         print(ser.readline().decode('utf-8').rstrip())
         pass
+    # Sleep for 1 second after the command
     time.sleep(1)
 
 #def target_aim(color_state):
 if color_state == 1: # this means we are targetting the TRIANGLE
-    cap = cv2.VideoCapture(0) # video capture source camera (Here webcam of laptop) 
-    ret,frame = cap.read() # return a single frame in variable `frame`
-    cv2.imwrite('shapes.jpg',frame)
-
+    # Capture a frame from the webcam
+    cap = cv2.VideoCapture(0)
+    ret, frame = cap.read()
+    # Save the captured frame as an image
+    cv2.imwrite('shapes.jpg', frame)
+    
     # Load the image
     image = cv2.imread('shapes.jpg')
 
@@ -58,44 +77,50 @@ if color_state == 1: # this means we are targetting the TRIANGLE
     # Create a binary mask for the green color
     green_mask = cv2.inRange(hsv_image, lower_green, upper_green)
 
-    result_image = cv2.bitwise_and(image,image, mask= green_mask)
+    # Create a result image with only green pixels visible
+    result_image = cv2.bitwise_and(image, image, mask=green_mask)
 
-    #save result image
-    cv2.imwrite("mask_file.jpg",result_image)
+    # Save the result image
+    cv2.imwrite("mask_file.jpg", result_image)
 
     img = cv2.imread("mask_file.jpg")
 
+    # Convert the result image to grayscale
     gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Apply thresholding to create a binary image
     ret, thresh = cv2.threshold(gray_image, 30, 255, 0)
-    cv2.imshow("Gray",gray_image)
+
     # Find contours in the binary mask
-    contours,hierarchy = cv2.findContours(thresh, cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
-    print("Number of contours detected:",len(contours))
+    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    print("Number of contours detected:", len(contours))
 
     # Create a new blank image
-
     for cnt in contours:
-        img = cv2.drawContours(img, [cnt], -1, (0,255,255), 3)
+        img = cv2.drawContours(img, [cnt], -1, (0, 255, 255), 3)
 
-    # compute the center of mass of the triangle
+    # Compute the center of mass of the triangle
     M = cv2.moments(cnt)
     if M['m00'] != 0.0:
-        x = int(M['m10']/M['m00'])
-        y = int(M['m01']/M['m00'])
-        cv2.circle(img,(x,y),5,255,-1)
+        x = int(M['m10'] / M['m00'])
+        y = int(M['m01'] / M['m00'])
+        # Draw a circle at the center of mass
+        cv2.circle(img, (x, y), 5, 255, -1)
         print(x)
         print(y)
-        target_aquired = 1 #have it add one so we know to move on to the next target???? 
-
+        target_aquired = 1
+    # Display the image with contours and center of mass
     cv2.imshow("Shapes", img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+# Function to check the error in target alignment
 def error_check(x, y):
     cx=x;
     cy=y;
     get_x = 0
     get_y = 0
+    # Define target positions for the triangle (green), blue circle, and pins (not updated)
     if color_state == 1:
         target_x = 313
         target_y = 182
@@ -105,11 +130,14 @@ def error_check(x, y):
     if color_state == 3: #willl also be updated
         target_x = -1
         target_y = -1
+    
     # Calculate the distance
     if color_state == 1 or 2:
         # distance = np.sqrt((cx - target_x) ** 2 + (cy - target_y) ** 2)
         x_dist = abs(cx - target_x)
         y_dist = abs(cy - target_y)
+        
+        # If X-axis error is greater than 5, adjust position left or right
         if x_dist > 5:
             if cx > target_x:
                 print("move right") #bot motion
@@ -124,6 +152,8 @@ def error_check(x, y):
         else:
             print("You got X!")
             get_x = 1
+        
+        # If Y-axis error is greater than 5, adjust position up or down
         if y_dist > 5:
             if cy > target_y:
                 print("move down") # ramp motion
@@ -139,74 +169,92 @@ def error_check(x, y):
             get_y = 1
     return(get_x, get_y)
 
+# Main program execution
 if __name__ == "__main__":
+    # Set up serial communication with Arduino boards
     ser_s = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
     ser_m = serial.Serial('/dev/ttyACM1', 9600, timeout=1)
     ser_s.reset_input_buffer()
     ser_m.reset_input_buffer()
-    ardcmd = 1
     while True:
-        if ardcmd == 1:
-                # Send 's' command to Arduino and wait for 'AckS'
-            #print("start")
-            time.sleep(3)
-            send_command_and_ack(ser_m, 's', 'Acks')
+    # Target the green triangle
+        if color_state == 1: # Check if the target state is 1 (green target)
+            # Send 's' command to Arduino and wait for 'AckS'
+            # Note: This command probably initiates the targeting process
+            time.sleep(3)  # Wait for 3 seconds before sending the command
+            send_command_and_ack(ser_m, 's', 'Acks')  # Send the 's' command and wait for 'AckS' response
             
             # Send 'c' three times and wait for 'AckC' after each command
-            for _ in range(1):
+            # Note: This might be a movement command for some predefined motion
+            for _ in range(3):
                 print("Corner")
-                motor_cmd_m('c')
-                send_command_and_ack(ser_m, 'c', 'Ackc')
-
+                motor_cmd_m('c')  # Send the 'c' command to the medium motor
+                send_command_and_ack(ser_m, 'c', 'Ackc')  # Wait for 'AckC' response
+            
             # Send 'uuuuu' to Arduino and wait for 'AckUUUUU'
-            for _ in range(5):
+            # Note: This might be another movement command for some predefined motion
+            for _ in range(1):
                 print("Move up")
-                motor_cmd_s('u')
-                send_command_and_ack(ser_s, 'u', 'Acku')
-
+                motor_cmd_s('uuuuu')  # Send the 'uuuuu' command to the small motor
+                send_command_and_ack(ser_s, 'uuuuu', 'Ackuuuuu')  # Wait for 'AckUUUUU' response
+            
             # Start error check code
+            # Note: This function might check the position of the target and adjust the position if needed
+            x, y = 0, 0 # Initialize x and y for error_check
+            get_x, get_y = error_check(x, y) # Call error_check function and get x, y values
+            
+            # Check if both X and Y positions are matched (get_x and get_y are both 1)
+            if error_check.get_x == 1 and error_check.get_y == 1:
+                print("Yeet")  # Success message for hitting the target
+                motor_cmd_s('y')  # Send 'y' command to the small motor
+                send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
+                send_command_and_ack(ser_m, 's', 'Acks')  # Send 's' command to the medium motor
+                # Note: This might be to bring the system to the next target placement (blue target)
+                color_state += 1  # Increment the target state to 2 (blue target and pins)
+
+        # Check if the target state is 2 (blue target and pins)
+        elif color_state == 2:
+            send_command_and_ack(ser_m, 's', 'Acks')  # Send 's' command to the medium motor, indicating arrival at the target
+            
+            for _ in range(1):
+                print("Reset")
+                motor_cmd_s('q')  # Send 'q' command to the small motor
+                send_command_and_ack(ser_s, 'q', 'Ackq')  # Wait for 'Ackq' response
+            
+            for _ in range(1):
+                print("Move up")
+                motor_cmd_s('uuu')  # Send 'uuu' command to the small motor
+                send_command_and_ack(ser_s, 'uuu', 'Ackuuu')  # Wait for 'Ackuuu' response
+            
+            # Start error check code
+            # Note: Similar to before, this function might check the position and adjust it
+            x, y = 0, 0 # Initialize x and y for error_check
+            get_x, get_y = error_check(x, y) # Call error_check function and get x, y values
+            
             error_check(x, y)
             
+            # Check if both X and Y positions are matched (get_x and get_y are both 1)
             if error_check.get_x == 1 and error_check.get_y == 1:
-                print("Yeet")
-                motor_cmd_s('y')
-                send_command_and_ack(ser_s, 'y', 'Acky')
-                ardcmd =+ 1
-        if ardcmd == 2: #maybe this will be the next target
-            time.sleep(3)
-            """
-               print("ready")
-                time.sleep(3)
-                print("Move Left") #moves wheels to the left, with respect of the camera
-                command = "l"
-                motor_cmd_s(command)
-                time.sleep(1)
-                print("Move Right") #moves wheels to the right, with respect of the camera
-                command = "r"
-                motor_cmd_s(command)
-                time.sleep(1)
-                print("Move Up") #moves the angle of the servo up 5 degrees
-                command = "u"
-                motor_cmd_s(command)
-                time.sleep(1)
-                print("Move Down") #moves the angle of the servo down 5 degrees
-                command = "d"
-                motor_cmd_s(command)
-                time.sleep(1)
-                print("Yeet") #turns on shooting motors
-                command = "y"
-                motor_cmd_s(command)
-                time.sleep(1)
-                print("Zero") # the angle of the servo goes to zero
-                command = "z"
-                motor_cmd_s(command)
-                time.sleep(1)
-                print("Kill") #turns off shooting motors
-                command = "k"
-                motor_cmd_s(command)
-                time.sleep(1)
-                print("Start") #takes in button push, begin to drive to first target
-                command = "s"
-                motor_cmd_s(command)
-                ardcmd == 0
-                """
+                print("Yeet")  # Success message for hitting the blue target
+                motor_cmd_s('y')  # Send 'y' command to the small motor
+                send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
+            
+            for _ in range(1):  # Aiming at the pins
+                print("Pivot Left")
+                motor_cmd_m('L')  # Send 'L' command to the medium motor
+                send_command_and_ack(ser_m, 'L', 'AckL')  # Wait for 'AckL' response
+            
+            for _ in range(1):
+                print("Reset")
+                motor_cmd_s('q')  # Send 'q' command to the small motor
+                send_command_and_ack(ser_s, 'q', 'Ackq')  # Wait for 'Ackq' response
+            
+            for _ in range(1):
+                print("Move down")
+                motor_cmd_s('d')  # Send 'd' command to the small motor
+                send_command_and_ack(ser_s, 'd', 'Ackd')  # Wait for 'Ackd' response
+            
+            for _ in range(1):
+                print("Yeet")  # Success message for hitting the pins
+                motor_cmd_s('y')  # Send 'y' command to the small motor
+                send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
