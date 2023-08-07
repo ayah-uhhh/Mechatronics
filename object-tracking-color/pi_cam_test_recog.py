@@ -200,7 +200,7 @@ if __name__ == "__main__":
             
             # Start error check code
             # Note: This function might check the position of the target and adjust the position if needed
-            x, y = 0, 0 # Initialize x and y for error_check
+            x, y = target_aim(color_state) # Initialize x and y for error_check
             get_x, get_y = error_check(x, y) # Call error_check function and get x, y values
             
             # Check if both X and Y positions are matched (get_x and get_y are both 1)
@@ -228,7 +228,7 @@ if __name__ == "__main__":
             
             # Start error check code
             # Note: Similar to before, this function might check the position and adjust it
-            x, y = 0, 0 # Initialize x and y for error_check
+            x, y = target_aim(color_state) # Initialize x and y for error_check
             get_x, get_y = error_check(x, y) # Call error_check function and get x, y values
             
             error_check(x, y)
