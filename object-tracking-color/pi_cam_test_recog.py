@@ -50,69 +50,69 @@ def send_command_and_ack(ser, command, ack):
     # Sleep for 1 second after the command
     time.sleep(1)
 
-#def target_aim(color_state):
-if color_state == 1: # this means we are targetting the TRIANGLE
-    # Capture a frame from the webcam
-    cap = cv2.VideoCapture(0)
-    ret, frame = cap.read()
-    # Save the captured frame as an image
-    cv2.imwrite('shapes.jpg', frame)
-    
-    # Load the image
-    image = cv2.imread('shapes.jpg')
+def target_aim(color_state):
+    if color_state == 1: # this means we are targetting the TRIANGLE
+        # Capture a frame from the webcam
+        cap = cv2.VideoCapture(0)
+        ret, frame = cap.read()
+        # Save the captured frame as an image
+        cv2.imwrite('shapes.jpg', frame)
+        
+        # Load the image
+        image = cv2.imread('shapes.jpg')
 
-    # Convert image to HSV color space
-    hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    #green_pixel_rgb = (201,226,153)
-    hsv_value = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    lower = hsv_value - (50,10,20)
-    upper = hsv_value + (50,10,20)
-    #print(hsv_value)
-    # Define lower and upper bounds for green color in HSV
-    lower_green = (30,100,100)
-    upper_green = (80,215,215)
-    #print(lower_green)
-    #print(upper_green)
+        # Convert image to HSV color space
+        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        #green_pixel_rgb = (201,226,153)
+        hsv_value = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        lower = hsv_value - (50,10,20)
+        upper = hsv_value + (50,10,20)
+        #print(hsv_value)
+        # Define lower and upper bounds for green color in HSV
+        lower_green = (30,100,100)
+        upper_green = (80,215,215)
+        #print(lower_green)
+        #print(upper_green)
 
-    # Create a binary mask for the green color
-    green_mask = cv2.inRange(hsv_image, lower_green, upper_green)
+        # Create a binary mask for the green color
+        green_mask = cv2.inRange(hsv_image, lower_green, upper_green)
 
-    # Create a result image with only green pixels visible
-    result_image = cv2.bitwise_and(image, image, mask=green_mask)
+        # Create a result image with only green pixels visible
+        result_image = cv2.bitwise_and(image, image, mask=green_mask)
 
-    # Save the result image
-    cv2.imwrite("mask_file.jpg", result_image)
+        # Save the result image
+        cv2.imwrite("mask_file.jpg", result_image)
 
-    img = cv2.imread("mask_file.jpg")
+        img = cv2.imread("mask_file.jpg")
 
-    # Convert the result image to grayscale
-    gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # Convert the result image to grayscale
+        gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # Apply thresholding to create a binary image
-    ret, thresh = cv2.threshold(gray_image, 30, 255, 0)
+        # Apply thresholding to create a binary image
+        ret, thresh = cv2.threshold(gray_image, 30, 255, 0)
 
-    # Find contours in the binary mask
-    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    print("Number of contours detected:", len(contours))
+        # Find contours in the binary mask
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        print("Number of contours detected:", len(contours))
 
-    # Create a new blank image
-    for cnt in contours:
-        img = cv2.drawContours(img, [cnt], -1, (0, 255, 255), 3)
+        # Create a new blank image
+        for cnt in contours:
+            img = cv2.drawContours(img, [cnt], -1, (0, 255, 255), 3)
 
-    # Compute the center of mass of the triangle
-    M = cv2.moments(cnt)
-    if M['m00'] != 0.0:
-        x = int(M['m10'] / M['m00'])
-        y = int(M['m01'] / M['m00'])
-        # Draw a circle at the center of mass
-        cv2.circle(img, (x, y), 5, 255, -1)
-        print(x)
-        print(y)
-        target_aquired = 1
-    # Display the image with contours and center of mass
-    cv2.imshow("Shapes", img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+        # Compute the center of mass of the triangle
+        M = cv2.moments(cnt)
+        if M['m00'] != 0.0:
+            x = int(M['m10'] / M['m00'])
+            y = int(M['m01'] / M['m00'])
+            # Draw a circle at the center of mass
+            cv2.circle(img, (x, y), 5, 255, -1)
+            print(x)
+            print(y)
+            target_aquired = 1
+        # Display the image with contours and center of mass
+        cv2.imshow("Shapes", img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
 # Function to check the error in target alignment
 def error_check(x, y):
