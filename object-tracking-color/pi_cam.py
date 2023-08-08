@@ -321,7 +321,7 @@ if __name__ == "__main__":
                 print("pivot left")
             
                 send_command_and_ack(ser_m, 'L', 'AckL')
-            if c:
+            if cmd == 'c':
                 print("corner")
             
                 send_command_and_ack(ser_m, 'c', 'Ackc')
