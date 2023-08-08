@@ -76,6 +76,11 @@ void loop() {
       desiredAngle = 35;
       newAngleReceived = true; // Set the flag to move the servo to the new angle
     }
+    else if (data == '9') {
+      // Set the desired angle to 35 degrees
+      desiredAngle = 0;
+      newAngleReceived = true; // Set the flag to move the servo to the new angle
+    }
   }
 
   // Move the servo to the desired angle if a new angle is received
