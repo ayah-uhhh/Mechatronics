@@ -4,6 +4,7 @@ import numpy as np
 import time
 import csv
 import serial
+import keyboard
 
 # Set up camera and image properties
 CAMERA_DEVICE_ID = 0
@@ -14,6 +15,7 @@ counter = 1
 # Define target state: 1 for triangle, 2 for circle, 3 for pins
 color_state = 1 
 target_aquired = 0
+manual = 1
 
 # Define function for small motor commands, aiming
 def motor_cmd_s(arg):
@@ -179,7 +181,7 @@ if __name__ == "__main__":
     ser_m.reset_input_buffer()
     while True:
     # Target the green triangle
-        if color_state == 1: # Check if the target state is 1 (green target)
+        if manual == 0: # Check if the target state is 1 (green target)
             # Send 's' command to Arduino and wait for 'AckS'
             # Note: This command probably initiates the targeting process
             time.sleep(3)  # Wait for 3 seconds before sending the command
@@ -194,10 +196,12 @@ if __name__ == "__main__":
                 
             # Send 'uuuuu' to Arduino and wait for 'AckUUUUU'
             # Note: This might be another movement command for some predefined motion
-            for _ in range(1):
+            for _ in range(4):
                 print("Move up")
                 #motor_cmd_s('uuuuu')  # Send the 'uuuuu' command to the small motor
-                send_command_and_ack(ser_s, 'uuuuu', 'Acku')  # Wait for 'AckUUUUU' response
+                send_command_and_ack(ser_s, 'u', 'Acku')  # Wait for 'AckUUUUU' response
+            for _ in range(1):
+                send_command_and_ack(ser_s, 'z', 'Ackz')
                 #Acku may break
             x, y = None, None
             counter = 0
@@ -217,69 +221,118 @@ if __name__ == "__main__":
                 # Check if both X and Y positions are matched (get_x and get_y are both 1)
                 if error_check.get_x == 1 and error_check.get_y == 1:
                     print("Yeet")  # Success message for hitting the target
-                    motor_cmd_s('y')  # Send 'y' command to the small motor
+                    #motor_cmd_s('y')  # Send 'y' command to the small motor
                     send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
                     time.sleep(10)
-                    send_command_and_ack(ser_m, 's', 'Acks')  # Send 's' command to the medium motor
+                    #send_command_and_ack(ser_m, 's', 'Acks')  # Send 's' command to the medium motor
                     # Note: This might be to bring the system to the next target placement (blue target)
-                    target_aquired = 1
-                    color_state += 1  # Increment the target state to 2 (blue target and pins)
+                    #target_aquired = 1
+                    #color_state += 1  # Increment the target state to 2 (blue target and pins)
 
         # Check if the target state is 2 (blue target and pins)
-        elif color_state == 2:
-            target_aquired = 0
-            send_command_and_ack(ser_m, 's', 'Acks')  # Send 's' command to the medium motor, indicating arrival at the target
+            #target_aquired = 0
+            #send_command_and_ack(ser_m, 's', 'Acks')  # Send 's' command to the medium motor, indicating arrival at the target
             
             for _ in range(1):
                 print("Reset")
-                motor_cmd_s('q')  # Send 'q' command to the small motor
+                #motor_cmd_s('q')  # Send 'q' command to the small motor
                 send_command_and_ack(ser_s, 'q', 'Ackq')  # Wait for 'Ackq' response
-            
-            for _ in range(4):
-                print("Corner")
-                #motor_cmd_m('c')  # Send the 'c' command to the medium motor
-                send_command_and_ack(ser_m, 'c', 'Ackc')  # Wait for 'AckC' response
-                
-            for _ in range(1):
-                print("Move up")
-                motor_cmd_s('uuu')  # Send 'uuu' command to the small motor
-                send_command_and_ack(ser_s, 'uuu', 'Ackuuu')  # Wait for 'Ackuuu' response
-            
-            for _ in range(1):
-                print("Yeet")  # Success message for hitting the pins
-                motor_cmd_s('y')  # Send 'y' command to the small motor
-                send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
-                time.sleep(10)
-            # Start error check code
-            # Note: Similar to before, this function might check the position and adjust it
-            # x, y = target_aim(color_state) # Initialize x and y for error_check
-            # get_x, get_y = error_check(x, y) # Call error_check function and get x, y values
-            
-            # error_check(x, y)
-            
-            # # Check if both X and Y positions are matched (get_x and get_y are both 1)
-            # if error_check.get_x == 1 and error_check.get_y == 1:
-            #     print("Yeet")  # Success message for hitting the blue target
-            #     motor_cmd_s('y')  # Send 'y' command to the small motor
-            #     send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
             
             for _ in range(1):  # Aiming at the pins
                 print("Pivot Left")
-                motor_cmd_m('L')  # Send 'L' command to the medium motor
+                #motor_cmd_m('L')  # Send 'L' command to the medium motor
+                send_command_and_ack(ser_m, 'L', 'AckL')  # Wait for 'AckL' response
+            
+                
+            for _ in range(3):
+                print("Move up")
+                #motor_cmd_s('u')  # Send 'uuu' command to the small motor
+                send_command_and_ack(ser_s, 'u', 'Acku')  # Wait for 'Ackuuu' response
+            
+            for _ in range(1):
+                print("Yeet")  # Success message for hitting the pins
+                #motor_cmd_s('y')  # Send 'y' command to the small motor
+                send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
+                time.sleep(10)
+            
+            for _ in range(1):  # Aiming at the pins
+                print("Pivot Left")
+                #motor_cmd_m('L')  # Send 'L' command to the medium motor
                 send_command_and_ack(ser_m, 'L', 'AckL')  # Wait for 'AckL' response
             
             for _ in range(1):
                 print("Reset")
-                motor_cmd_s('q')  # Send 'q' command to the small motor
+                #motor_cmd_s('q')  # Send 'q' command to the small motor
                 send_command_and_ack(ser_s, 'q', 'Ackq')  # Wait for 'Ackq' response
             
             for _ in range(1):
                 print("Move down")
-                motor_cmd_s('d')  # Send 'd' command to the small motor
+                #motor_cmd_s('d')  # Send 'd' command to the small motor
                 send_command_and_ack(ser_s, 'd', 'Ackd')  # Wait for 'Ackd' response
             
             for _ in range(2):
                 print("Yeet")  # Success message for hitting the pins
-                motor_cmd_s('y')  # Send 'y' command to the small motor
+                #motor_cmd_s('y')  # Send 'y' command to the small motor
                 send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
                 time.sleep(10)
+                
+        if manual == 1:
+        
+            z = keyboard.is_pressed('z')
+            x = keyboard.is_pressed('x')
+            u = keyboard.is_pressed('u')
+            d = keyboard.is_pressed('d')
+            y = keyboard.is_pressed('y')
+            r = keyboard.is_pressed('r')
+            l = keyboard.is_pressed('l')
+            R = keyboard.is_pressed('R')
+            L = keyboard.is_pressed('L')
+            c = keyboard.is_pressed('c')
+            if z:
+                print("Move up a widdle bit")
+                
+                send_command_and_ack(ser_s, 'z', 'Ackz')
+                
+            if x:
+                print("Move down a widdle bit")
+            
+                send_command_and_ack(ser_s, 'x', 'Ackx')
+                
+            if u:
+                print("Move up")
+                
+                send_command_and_ack(ser_s, 'u', 'Acku')
+                
+            if d:
+                print("Move down")
+            
+                send_command_and_ack(ser_s, 'd', 'Ackd')
+                
+            if y:
+                print("Yeet")
+        
+                send_command_and_ack(ser_s, 'y', 'Acky')
+            
+            if r:
+                print("raght")
+            
+                send_command_and_ack(ser_m, 'r', 'Ackr')
+                
+            if l:
+                print("left")
+        
+                send_command_and_ack(ser_m, 'l', 'Ackl')
+                
+            if R:
+                print("pivot raght")
+            
+                send_command_and_ack(ser_m, 'R', 'AckR')
+            if L:
+                print("pivot left")
+            
+                send_command_and_ack(ser_m, 'L', 'AckL')
+            if c:
+                print("corner")
+            
+                send_command_and_ack(ser_m, 'c', 'Ackc')
+                
