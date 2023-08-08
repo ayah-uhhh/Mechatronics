@@ -291,7 +291,7 @@ void loop() {
         DriveContinue();
         Serial.println("Ackc");
         */
-        if (CornerCount >= 3) {
+        if (CornerCount >= 3) { //this may stop the 4th C :)
           AllStop(); // Stop
         }
         else {
@@ -354,16 +354,6 @@ void PivotRight() {
   BackRightSpeed = PivotSpeed;
 }
 
-
-
-
-
-
-
-
-
-
-
 void StrafeFrontRight() {
   //DriveState = DriveFindLine;
   FrontLeftSpeed = -PivotSpeed;
@@ -380,20 +370,7 @@ void StrafeBackRight() {
   BackRightSpeed = 0;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-void CornerLeft() {
+void CornerLeft() { // we will need a cornerright
   DriveState = DriveInsideCorner;
   FrontLeftSpeed = InsideCornerSpeedLeft;
   BackLeftSpeed = InsideCornerSpeedLeft;

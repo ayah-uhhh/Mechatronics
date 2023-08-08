@@ -42,7 +42,8 @@ def send_command_and_ack(ser, command, ack):
     # Reset input buffer for serial communication with given serial object (ser)
     ser.reset_input_buffer()
     # Write command to the serial object
-    ser.write(bytes(command, 'utf-8'))
+    if command != 's'
+        ser.write(bytes(command, 'utf-8'))
     # Wait until the acknowledgment response matches the provided ack parameter
     while ser.readline().decode('utf-8').rstrip() != ack: # This will change based on what "ack" you place in the function
         print(ser.readline().decode('utf-8').rstrip())
@@ -182,38 +183,51 @@ if __name__ == "__main__":
             # Send 's' command to Arduino and wait for 'AckS'
             # Note: This command probably initiates the targeting process
             time.sleep(3)  # Wait for 3 seconds before sending the command
-            send_command_and_ack(ser_m, 's', 'Acks')  # Send the 's' command and wait for 'AckS' response
+            send_command_and_ack(ser_m, 's', 'Acks')  # wait for 'AckS' response
             
             # Send 'c' three times and wait for 'AckC' after each command
             # Note: This might be a movement command for some predefined motion
             for _ in range(3):
                 print("Corner")
-                motor_cmd_m('c')  # Send the 'c' command to the medium motor
+                #motor_cmd_m('c')  # Send the 'c' command to the medium motor
                 send_command_and_ack(ser_m, 'c', 'Ackc')  # Wait for 'AckC' response
-            
+                
             # Send 'uuuuu' to Arduino and wait for 'AckUUUUU'
             # Note: This might be another movement command for some predefined motion
             for _ in range(1):
                 print("Move up")
-                motor_cmd_s('uuuuu')  # Send the 'uuuuu' command to the small motor
-                send_command_and_ack(ser_s, 'uuuuu', 'Ackuuuuu')  # Wait for 'AckUUUUU' response
-            
-            # Start error check code
-            # Note: This function might check the position of the target and adjust the position if needed
-            x, y = target_aim(color_state) # Initialize x and y for error_check
-            get_x, get_y = error_check(x, y) # Call error_check function and get x, y values
-            
-            # Check if both X and Y positions are matched (get_x and get_y are both 1)
-            if error_check.get_x == 1 and error_check.get_y == 1:
-                print("Yeet")  # Success message for hitting the target
-                motor_cmd_s('y')  # Send 'y' command to the small motor
-                send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
-                send_command_and_ack(ser_m, 's', 'Acks')  # Send 's' command to the medium motor
-                # Note: This might be to bring the system to the next target placement (blue target)
-                color_state += 1  # Increment the target state to 2 (blue target and pins)
+                #motor_cmd_s('uuuuu')  # Send the 'uuuuu' command to the small motor
+                send_command_and_ack(ser_s, 'uuuuu', 'Acku')  # Wait for 'AckUUUUU' response
+                #Acku may break
+            x, y = None, None
+            counter = 0
+            while x and y == None and counter <= 2:
+                x, y = target_aim(color_state)
+                print("Corner")
+                #motor_cmd_m('c')  # Send the 'c' command to the medium motor
+                send_command_and_ack(ser_m, 'c', 'Ackc')  # Wait for 'AckC' response
+                counter += 1
+                
+            while target_aquired == 0:
+                # Start error check code
+                # Note: This function might check the position of the target and adjust the position if needed
+                x, y = target_aim(color_state) # Initialize x and y for error_check
+                get_x, get_y = error_check(x, y) # Call error_check function and get x, y values
+                
+                # Check if both X and Y positions are matched (get_x and get_y are both 1)
+                if error_check.get_x == 1 and error_check.get_y == 1:
+                    print("Yeet")  # Success message for hitting the target
+                    motor_cmd_s('y')  # Send 'y' command to the small motor
+                    send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
+                    time.sleep(10)
+                    send_command_and_ack(ser_m, 's', 'Acks')  # Send 's' command to the medium motor
+                    # Note: This might be to bring the system to the next target placement (blue target)
+                    target_aquired = 1
+                    color_state += 1  # Increment the target state to 2 (blue target and pins)
 
         # Check if the target state is 2 (blue target and pins)
         elif color_state == 2:
+            target_aquired = 0
             send_command_and_ack(ser_m, 's', 'Acks')  # Send 's' command to the medium motor, indicating arrival at the target
             
             for _ in range(1):
@@ -221,23 +235,33 @@ if __name__ == "__main__":
                 motor_cmd_s('q')  # Send 'q' command to the small motor
                 send_command_and_ack(ser_s, 'q', 'Ackq')  # Wait for 'Ackq' response
             
+            for _ in range(4):
+                print("Corner")
+                #motor_cmd_m('c')  # Send the 'c' command to the medium motor
+                send_command_and_ack(ser_m, 'c', 'Ackc')  # Wait for 'AckC' response
+                
             for _ in range(1):
                 print("Move up")
                 motor_cmd_s('uuu')  # Send 'uuu' command to the small motor
                 send_command_and_ack(ser_s, 'uuu', 'Ackuuu')  # Wait for 'Ackuuu' response
             
-            # Start error check code
-            # Note: Similar to before, this function might check the position and adjust it
-            x, y = target_aim(color_state) # Initialize x and y for error_check
-            get_x, get_y = error_check(x, y) # Call error_check function and get x, y values
-            
-            error_check(x, y)
-            
-            # Check if both X and Y positions are matched (get_x and get_y are both 1)
-            if error_check.get_x == 1 and error_check.get_y == 1:
-                print("Yeet")  # Success message for hitting the blue target
+            for _ in range(1):
+                print("Yeet")  # Success message for hitting the pins
                 motor_cmd_s('y')  # Send 'y' command to the small motor
                 send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
+                time.sleep(10)
+            # Start error check code
+            # Note: Similar to before, this function might check the position and adjust it
+            # x, y = target_aim(color_state) # Initialize x and y for error_check
+            # get_x, get_y = error_check(x, y) # Call error_check function and get x, y values
+            
+            # error_check(x, y)
+            
+            # # Check if both X and Y positions are matched (get_x and get_y are both 1)
+            # if error_check.get_x == 1 and error_check.get_y == 1:
+            #     print("Yeet")  # Success message for hitting the blue target
+            #     motor_cmd_s('y')  # Send 'y' command to the small motor
+            #     send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
             
             for _ in range(1):  # Aiming at the pins
                 print("Pivot Left")
@@ -254,7 +278,8 @@ if __name__ == "__main__":
                 motor_cmd_s('d')  # Send 'd' command to the small motor
                 send_command_and_ack(ser_s, 'd', 'Ackd')  # Wait for 'Ackd' response
             
-            for _ in range(1):
+            for _ in range(2):
                 print("Yeet")  # Success message for hitting the pins
                 motor_cmd_s('y')  # Send 'y' command to the small motor
                 send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
+                time.sleep(10)
