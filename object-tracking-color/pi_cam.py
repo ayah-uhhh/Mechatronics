@@ -325,4 +325,8 @@ if __name__ == "__main__":
                 print("corner")
             
                 send_command_and_ack(ser_m, 'c', 'Ackc')
+            if cmd == 'c':
+                print("rest")
+            
+                send_command_and_ack(ser_m, 'q', 'Ackq')
                 
