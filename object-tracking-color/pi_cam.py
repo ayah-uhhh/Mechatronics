@@ -277,6 +277,7 @@ if __name__ == "__main__":
                 time.sleep(10)
                 
         if manual == 1:
+            cmd = ''
             cmd = input()
             if cmd == 'z':
                 print("Move up a widdle bit")
