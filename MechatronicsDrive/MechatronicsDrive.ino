@@ -1,6 +1,9 @@
 #define FALSE (0)
 #define TRUE  (!FALSE)
 
+// Uncomment the following line for the bot to stop after taking a corner, rather than proceeding
+//#define STOP_AFTER_CORNERS TRUE
+
 #include <Motoron.h>
 
 // Define the GPIO ports
@@ -34,39 +37,57 @@ const int RightControllerAddress = 16;
 const int FrontMotor = 1;
 const int BackMotor = 2;
 const int MinFwdSpeed = 0;
-const int MaxFwdSpeed = 600;
-const int DefaultSpeed = 400;
+const int MaxFwdSpeed = 800;
 const int DefaultAcceleration = 100;
 const int DefaultDeceleration = 500;
 const int DefaultCommandTimeout = 100;
 
-// Define the driving states and variables
+// Define the driving states 
 const int DriveIdle = 0;
-const int DriveStraight = 1;
-const int DriveInsideCorner = 2;
-const int DriveOutsideCorner = 3;
-const int DriveFindLine = 4;
-const int DriveAlignLineBack = 5;
-const int DriveAlignLineFront = 6;
-const int DriveStrafeFrontRight = 7;
-const int DriveStrafeBackRight = 8;
+const int DriveFindLine = 1;
+const int DriveAlignBack = 2;
+const int DriveAlignFront = 3;
+const int DriveStraight = 6;
+const int DriveInsideCorner = 7;
+const int DriveStrafeFrontRight = 8;
+const int DriveStrafeBackRight = 9;
+const int DriveStrafeFrontLeft = 10;
+const int DriveStrafeBackLeft = 11;
+const int DriveOutsideCorner = 12;
+const int DriveRotateRight = 13;
+const int DriveRotateLeft = 14;
 
+// Define the timing constants
 const int VeerCorrection = 30;
-const int PivotSpeed = DefaultSpeed;
+const int DefaultSpeed = 400;
+const int PivotSpeed = 300;
 const int InsideCornerSpeedLeft = -300;
 const int InsideCornerSpeedRight = 250;
+const int RotateSlowSpeed = 250;
+const int RotateFastSpeed = 350;
 const int DefaultLoopTimeMs = 20;
-const int BrakingLoopTimeMs = 100;
-const int OvershootLoopTimeMs = 100;
+const int BrakingLoopTimeMs = DefaultCommandTimeout - 5;
+const int OvershootLoopTimeMs = DefaultCommandTimeout - 5;
+const int AlignmentTimeMs = DefaultCommandTimeout - 5;
 
+// Define the variables
 int DriveState = DriveIdle;
 int FrontRightSpeed = DefaultSpeed;
 int FrontLeftSpeed = DefaultSpeed;
 int BackRightSpeed = DefaultSpeed;
 int BackLeftSpeed = DefaultSpeed;
 int StraightCount = 0;
-int CornerCount = 0;
 int LoopDelayTime = DefaultLoopTimeMs;
+
+// Since the digital inputs change in realtime, we should read them once
+// once per loop cycle and store the results in the int's below
+int SensorFrontCornerOuter;
+int SensorFrontCornerInner;
+int SensorFrontSideInner;
+int SensorFrontSideOuter;
+int SensorBackSideOuter;
+int SensorBackSideInner;
+int SensorBackCornerOuter;
 
 // This code creates an object for each Motoron controller.
 // The number passed as the first argument to each constructor
@@ -132,33 +153,43 @@ void loop() {
     Serial.write(SerialCommand);
     switch (SerialCommand) {
       case 's': // Start
-        //Serial.println("Starting..."); // Start
         Serial.println("Acks");
-        CornerCount = 0;
-        DriveState = DriveStrafeFrontRight;
+      case '1': // StrafeFrontRight
+        DriveState = DriveFindLine;
         StrafeFrontRight();
         DriveContinue(); 
-        /*
-        DriveForwardDefault();
-        PivotRight();
-        DriveContinue(); // Should check sensors first to see if we're already good
-        */ 
       break;
+      case '2': // StrafeBackRight
+        DriveState = DriveStrafeBackRight;
+        StrafeBackRight();
+        DriveContinue(); 
+        break;
+      case '3': // StrafeFrontLeft
+        DriveState = DriveStrafeFrontLeft;
+        StrafeFrontLeft();
+        DriveContinue(); 
+        break;
+      case '4': // StrafeBackLeft
+        DriveState = DriveStrafeBackLeft;
+        StrafeBackLeft();
+        DriveContinue(); 
+        break;
       case 'c': // Take the corner
-        Serial.println("Take the corner and find the next");
+        Serial.println("Ackc");
         CornerLeft();
+        DriveState = DriveInsideCorner;
         DriveContinue(); // Should check sensors first to see if we're already good
       break;
       case 'L': // Pivot left by shifting the back (shooter perspective) right
-        FrontLeftGo(-(DefaultSpeed/2));
-        BackLeftGo(-(DefaultSpeed/2));
+        FrontLeftGo(-PivotSpeed);
+        BackLeftGo(-PivotSpeed);
         FrontRightGo(0);
         BackRightGo(0);
         Serial.println("AckR");
       break;
       case 'R': // Pivot right by shifting the back (shooter perspective) left
-        FrontLeftGo(DefaultSpeed/2);
-        BackLeftGo(DefaultSpeed/2);
+        FrontLeftGo(PivotSpeed);
+        BackLeftGo(PivotSpeed);
         FrontRightGo(0);
         BackRightGo(0);
         Serial.println("AckL");
@@ -185,125 +216,173 @@ void loop() {
   }
   if (TriggerButton1) { // Start by button
     TriggerButton1 = FALSE;
-    //Serial.println("Button 1 pressed"); // Start
     Serial.println("Acks");
-    /*
-    CornerCount = 0;
-    DriveForwardDefault();
-    */ 
-    DriveState = DriveStrafeFrontRight;
     StrafeFrontRight();
+    DriveState = DriveFindLine;
     DriveContinue(); 
   }
-  if (TriggerButton2) { // Stop by button
+  if (TriggerButton2) { // Corner by button
     TriggerButton2 = FALSE;
-    //Serial.println("Button 2 pressed"); // 
-    Serial.println("Ackk");
-    //CornerLeft();
-    //DriveContinue(); // Should check sensors first to see if we're already good
-    DriveState = DriveStrafeBackRight;
-    StrafeBackRight();
-    DriveContinue(); 
+    CornerLeft();
+    DriveState = DriveInsideCorner;
+    DriveContinue();
   }
 
+  // Sample the sensor inputs once per loop here:
+  SensorFrontCornerOuter = !digitalRead(FrontCornerOuter);
+  SensorFrontCornerInner = !digitalRead(FrontCornerInner);
+  SensorFrontSideInner = !digitalRead(FrontSideInner);
+  SensorFrontSideOuter = !digitalRead(FrontSideOuter);
+  SensorBackSideOuter = !digitalRead(BackSideOuter);
+  SensorBackSideInner = !digitalRead(BackSideInner);
+  SensorBackCornerOuter = !digitalRead(BackCornerOuter);
 
   // Below is where the driving occurs
   switch ( DriveState ) {
     case DriveIdle: // Do nothing
     break;
-    case DriveFindLine: // Stop after finding an outside corner
-      if ( !SensorDetect(FrontSideOuter) &&
-           !SensorDetect(FrontSideInner)
-      ) {
-        PivotRight();
-        DriveContinue(); // 
-        break;
+    case DriveFindLine: // Find any righthand line
+      if (SensorBackCornerOuter) {
+        DriveForwardDefault(); // We backed up too far
+        DriveContinue();
       }
-      // Fall through to "DriveAlignLineBack" below
-    case DriveAlignLineBack: // 
-      AllStop();
-      DriveState = DriveIdle;
-
-    break;
-    case DriveStrafeFrontRight: // 
-      if ( !SensorDetect(FrontSideOuter) &&
-           !SensorDetect(FrontSideInner)
-      ) {
-        StrafeFrontRight();
-        DriveContinue(); // 
+      else if (SensorFrontSideOuter || SensorFrontSideInner) {
+        if (!SensorBackSideInner) { // Test back coarse
+          if (SensorBackSideOuter) { // Test back fine
+            if (!SensorFrontSideInner) { // Test front fine
+              //AllStop(); // We're on the line perfect
+              DriveForwardDefault(); // We're on the line perfect
+              DriveContinue();
+              DriveState = DriveStraight;
+            }
+            else {
+              StrafeFrontLeft(); // We're over the line on the front, and perfect in the back
+              DriveContinue();
+              DriveState = DriveAlignFront;
+            }
+          }
+          else {
+            StrafeBackRight(); // We're off the line on both back sensors
+            DriveContinue();
+            DriveState = DriveAlignBack;
+          }
+        }
+        else {
+          StrafeBackLeft(); // The back is over the line right
+          DriveContinue();
+          DriveState = DriveAlignBack;
+        }
       }
+      else if (SensorBackSideInner) {
+        StrafeBackLeft(); // Don't go too far right with the back
+        DriveContinue();
+      } 
       else {
-        AllStop();
-        DriveState = DriveIdle;
+        StrafeFrontRight(); // Keep searching for a line on the front right
+        DriveContinue();
       }
       break;
 
-    case DriveStrafeBackRight: // 
-      if ( !SensorDetect(BackSideOuter) &&
-           !SensorDetect(BackSideInner)
-      ) {
-        StrafeBackRight();
-        DriveContinue(); // 
+    case DriveAlignBack: // 
+      if ((SensorBackSideOuter || SensorBackSideInner)) {
+        if (!SensorFrontSideInner) { // Test front coarse
+          if (SensorFrontSideOuter) { // Test front fine
+            if (!SensorBackSideInner) { // Test back fine
+              //AllStop(); // We're on the line perfect
+              DriveForwardDefault(); // We're on the line perfect
+              DriveContinue();
+              DriveState = DriveStraight;
+            }
+            else {
+              StrafeBackLeft(); // We're over the line on the back, and perfect in the front
+              DriveContinue();
+              DriveState = DriveAlignBack;
+            }
+          }
+          else {
+            StrafeFrontRight(); // We're off the line on both front sensors
+            DriveContinue();
+            DriveState = DriveAlignFront;
+          }
+        }
+        else {
+          StrafeFrontLeft(); // The front is over the line right
+          DriveContinue();
+          DriveState = DriveAlignFront;
+        }
       }
       else {
-        AllStop();
-        DriveState = DriveIdle;
+        StrafeBackRight(); // Keep searching for a line on the back right
+        DriveContinue();
+      }
+    break;
+
+    case DriveAlignFront: //
+      if (SensorFrontSideOuter || SensorFrontSideInner) {
+        if (!SensorBackSideInner) { // Test back coarse
+          if (SensorBackSideOuter) { // Test back fine
+            if (!SensorFrontSideInner) { // Test front fine
+              //AllStop(); // We're on the line perfect
+              DriveForwardDefault(); // We're on the line perfect
+              DriveContinue();
+              DriveState = DriveStraight;
+            }
+            else {
+              StrafeFrontLeft(); // We're over the line on the front, and perfect in the back
+              DriveContinue();
+              DriveState = DriveAlignFront;
+            }
+          }
+          else {
+            StrafeBackRight(); // We're off the line on both back sensors
+            DriveContinue();
+            DriveState = DriveAlignBack;
+          }
+        }
+        else {
+          StrafeBackLeft(); // The back is over the line right
+          DriveContinue();
+          DriveState = DriveAlignBack;
+        }
+      }
+      else {
+        StrafeFrontRight(); // Search for a line on the front right
+        DriveContinue();
       }
       break;
-
-
-    case DriveAlignLineFront: // 
-
-    break;
     case DriveInsideCorner: // Turn left
-      if (    SensorDetect(FrontCornerOuter) 
-           || SensorDetect(FrontCornerInner)
-           //|| SensorDetect(FrontSideInner) 
-      ) { // The front edge is still over a line
+      if (SensorFrontCornerOuter || SensorFrontCornerInner) {
         CornerLeft();
         DriveContinue();
       }
       else { // Go straight
-        DriveForwardDefault();
+        DriveContinue(); 
+        DriveState = DriveFindLine;
+        //DriveForwardDefault();
+        //DriveContinue();
+        //DriveState = DriveStraight;
       }
       /*
-      else if ( SensorDetect(FrontSideOuter) ) {
+      else if (SensorFrontSideOuter) {
         //AllStop(); // We're back on target, so stop turning
         DriveState = DriveStraight; 
         DriveContinue();
       }
       else { // We are out off the line
-        PivotRight();
-        LoopDelayTime = OvershootLoopTimeMs;
-        DriveContinue();
+        DriveState = DriveFindLine;
+        StrafeFrontRight();
+        DriveContinue(); 
       }
       */
       break;
     case DriveStraight:
-      if ( SensorDetect(FrontCornerOuter) ||
-           SensorDetect(FrontCornerInner)) 
-      { // The front edge is over a line
-        Serial.println("Corner detected");
+      if (SensorFrontCornerOuter) { 
+        Serial.println("Corner detected"); // The front edge is over a line 
         Serial.println("Ackc");
-        //AllStop();
-        /*
-        CornerLeft();
-        DriveContinue();
-        Serial.println("Ackc");
-        */
-        if (CornerCount >= 3) { //this may stop the 4th C :)
-          AllStop(); // Stop
-        }
-        else {
-          CornerCount++;
-          CornerLeft();
-          DriveContinue();
-        }
-        /*
-        */
+        AllStop();
       }
       else {
-        if (SensorDetect(FrontSideInner)) { // We have veered to the right, over the line
+        if (SensorFrontSideInner) { // We have veered to the right, over the line
           if (FrontRightSpeed < MaxFwdSpeed) {
             FrontRightSpeed = DefaultSpeed + VeerCorrection;
           }
@@ -312,7 +391,7 @@ void loop() {
           }
           Serial.println("Front veered to the right");
         }
-        else if (!SensorDetect(FrontSideOuter)) { // We have veered to the left, off the line
+        else if (!SensorFrontSideOuter) { // We have veered to the left, off the line
           if (FrontRightSpeed > MinFwdSpeed) {
             FrontRightSpeed = DefaultSpeed - VeerCorrection;
           }
@@ -328,6 +407,49 @@ void loop() {
         DriveContinue(); // This sends the updated speed to all the wheels
       }
       break;
+
+    case DriveStrafeFrontRight: // 
+      if (SensorFrontSideOuter || SensorFrontSideInner) {
+        AllStop();
+        DriveState = DriveIdle;
+      }
+      else {
+        StrafeFrontRight();
+        DriveContinue(); // 
+      }
+      break;
+
+    case DriveStrafeBackRight: // 
+      if (SensorBackSideOuter || SensorBackSideInner) {
+        AllStop();
+        DriveState = DriveIdle;
+      }
+      else {
+        StrafeBackRight();
+        DriveContinue(); // 
+      }
+      break;
+
+    case DriveStrafeFrontLeft:
+      StrafeFrontLeft();
+      DriveContinue();
+      break;
+
+    case DriveStrafeBackLeft:
+      StrafeBackLeft();
+      DriveContinue();
+      break;
+
+    case DriveRotateLeft:
+      RotateLeft();
+      DriveContinue();
+      break;
+
+    case DriveRotateRight:
+      RotateRight();
+      DriveContinue();
+      break;
+
     default:
       Serial.println("Ackl"); // Lost
       AllStop();
@@ -337,7 +459,6 @@ void loop() {
 }
 
 void AllStop() {
-  CornerCount = 0;
   DriveState = DriveIdle;
   LoopDelayTime = BrakingLoopTimeMs;
   LeftCtrl.setBraking(BackMotor, BackLeftSpeed);
@@ -346,32 +467,49 @@ void AllStop() {
   RightCtrl.setBraking(FrontMotor, FrontRightSpeed);    
 }
 
-void PivotRight() {
-  //DriveState = DriveFindLine;
-  FrontLeftSpeed = PivotSpeed;
-  BackLeftSpeed = -PivotSpeed;
-  FrontRightSpeed = -PivotSpeed;
-  BackRightSpeed = PivotSpeed;
+void RotateLeft() {
+  FrontLeftSpeed = -RotateSlowSpeed;
+  BackLeftSpeed = -RotateSlowSpeed;
+  FrontRightSpeed = RotateFastSpeed;
+  BackRightSpeed = RotateFastSpeed;
+}
+
+void RotateRight() {
+  FrontLeftSpeed = RotateSlowSpeed;
+  BackLeftSpeed = RotateSlowSpeed;
+  FrontRightSpeed = -RotateFastSpeed;
+  BackRightSpeed = -RotateFastSpeed;
 }
 
 void StrafeFrontRight() {
-  //DriveState = DriveFindLine;
-  FrontLeftSpeed = -PivotSpeed;
-  BackLeftSpeed = PivotSpeed;
+  FrontLeftSpeed = -DefaultSpeed;
+  BackLeftSpeed = DefaultSpeed;
   FrontRightSpeed = 0;
-  BackRightSpeed = -PivotSpeed;
+  BackRightSpeed = -DefaultSpeed;
 }
 
 void StrafeBackRight() {
-  //DriveState = DriveFindLine;
-  FrontLeftSpeed = PivotSpeed;
-  BackLeftSpeed = -PivotSpeed;
-  FrontRightSpeed = PivotSpeed;
+  FrontLeftSpeed = -DefaultSpeed;
+  BackLeftSpeed = DefaultSpeed;
+  FrontRightSpeed = DefaultSpeed;
   BackRightSpeed = 0;
 }
 
-void CornerLeft() { // we will need a cornerright
-  DriveState = DriveInsideCorner;
+void StrafeFrontLeft() {
+  FrontLeftSpeed = DefaultSpeed;
+  BackLeftSpeed = -DefaultSpeed;
+  FrontRightSpeed = 0;
+  BackRightSpeed = DefaultSpeed;
+}
+
+void StrafeBackLeft() {
+  FrontLeftSpeed = DefaultSpeed;
+  BackLeftSpeed = -DefaultSpeed;
+  FrontRightSpeed = -DefaultSpeed;
+  BackRightSpeed = 0;
+}
+
+void CornerLeft() {
   FrontLeftSpeed = InsideCornerSpeedLeft;
   BackLeftSpeed = InsideCornerSpeedLeft;
   FrontRightSpeed = InsideCornerSpeedRight;
@@ -386,20 +524,10 @@ void DriveContinue() {
 }
 
 void DriveForwardDefault() {
-  //CornerCount = 0;
-  DriveState = DriveStraight;
   FrontLeftSpeed = DefaultSpeed; 
   BackLeftSpeed = DefaultSpeed;   
   FrontRightSpeed = DefaultSpeed;
   BackRightSpeed = DefaultSpeed; 
-  FrontLeftGo(DefaultSpeed);
-  BackLeftGo(DefaultSpeed);
-  FrontRightGo(DefaultSpeed);
-  BackRightGo(DefaultSpeed);
-}
-
-int SensorDetect(int SensorNumber) {
-  return(!digitalRead(SensorNumber));
 }
 
 void FrontRightGo(int Speed) {
@@ -457,42 +585,4 @@ void ButtonsHandle() {
   }
 }
 
-      /*
-      if ( SensorDetect(FrontCornerOuter) ||
-           SensorDetect(FrontCornerInner) ||
-           SensorDetect(FrontSideInner) ) 
-      { // The front edge is still over a line
-        CornerLeft();
-        DriveContinue();
-      }
-      else if ( SensorDetect(FrontSideOuter) ) { 
-        DriveForwardDefault(); // We are correctly on the line
-      }
-      else { // We are out off the line
-        PivotRight();
-        DriveContinue();
-      }
-      break;
-      */ 
-
-        /*
-        if (SensorDetect(BackSideInner)) { // We have veered to the right, over the line
-          if (BackRightSpeed < MaxFwdSpeed) {
-            BackRightSpeed += VeerCorrection;
-          }
-          if (BackLeftSpeed > MinFwdSpeed) {
-            BackLeftSpeed -= VeerCorrection;
-          }
-          Serial.println("Veered to the right");
-        }
-        else if (!SensorDetect(BackSideOuter)) { // We have veered to the left, off the line
-          if (BackRightSpeed > MinFwdSpeed) {
-            BackRightSpeed -= VeerCorrection;
-          }
-          if (BackLeftSpeed < MaxFwdSpeed) {
-            BackLeftSpeed += VeerCorrection;
-          }
-          Serial.println("Veered to the left");
-        }
-        */
 
