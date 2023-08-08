@@ -44,7 +44,7 @@ def send_command_and_ack(ser, command, ack):
     # Reset input buffer for serial communication with given serial object (ser)
     ser.reset_input_buffer()
     # Write command to the serial object
-    if command != 's'
+    if command != 's':
         ser.write(bytes(command, 'utf-8'))
     # Wait until the acknowledgment response matches the provided ack parameter
     while ser.readline().decode('utf-8').rstrip() != ack: # This will change based on what "ack" you place in the function
