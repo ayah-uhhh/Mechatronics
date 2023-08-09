@@ -15,7 +15,7 @@ counter = 1
 # Define target state: 1 for triangle, 2 for circle, 3 for pins
 color_state = 1 
 target_aquired = 0
-manual = 1
+manual = 0
 
 # Define function for small motor commands, aiming
 def motor_cmd_s(arg):
@@ -186,8 +186,6 @@ if __name__ == "__main__":
     while True:
     # Target the green triangle
         if manual == 0: # Check if the target state is 1 (green target)
-            # Send 's' command to Arduino and wait for 'AckS'
-            # Note: This command probably initiates the targeting process
             time.sleep(3)  # Wait for 3 seconds before sending the command
             send_command_and_ack(ser_m, 's', 'Acks')  # wait for 'AckS' response
             
@@ -228,15 +226,6 @@ if __name__ == "__main__":
                     #motor_cmd_s('y')  # Send 'y' command to the small motor
                     send_command_and_ack(ser_s, 'y', 'Acky')  # Wait for 'Acky' response
                     time.sleep(10)
-                    #send_command_and_ack(ser_m, 's', 'Acks')  # Send 's' command to the medium motor
-                    # Note: This might be to bring the system to the next target placement (blue target)
-                    #target_aquired = 1
-                    #color_state += 1  # Increment the target state to 2 (blue target and pins)
-
-        # Check if the target state is 2 (blue target and pins)
-            #target_aquired = 0
-            #send_command_and_ack(ser_m, 's', 'Acks')  # Send 's' command to the medium motor, indicating arrival at the target
-            
             for _ in range(1):
                 print("Reset")
                 #motor_cmd_s('q')  # Send 'q' command to the small motor
@@ -244,9 +233,13 @@ if __name__ == "__main__":
             
             for _ in range(3):  # Aiming at the pins
                 print("Pivot Left")
-                #motor_cmd_m('L')  # Send 'L' command to the medium motor
-                send_command_and_ack(ser_m, 'L', 'AckL')  # Wait for 'AckL' response
+                for _ in range(30):
+                    send_command_and_ack(ser_m, 'L', 'AckL')
             
+            for _ in range(1):
+                print("little pivot left")
+                for _ in range(10):
+                    send_command_and_ack(ser_s, 'I', 'AckI')
                 
             for _ in range(3):
                 print("Move up")
@@ -261,8 +254,8 @@ if __name__ == "__main__":
             
             for _ in range(1):  # Aiming at the pins
                 print("Pivot Left")
-                #motor_cmd_m('L')  # Send 'L' command to the medium motor
-                send_command_and_ack(ser_m, 'L', 'AckL')  # Wait for 'AckL' response
+                for _ in range(30):
+                    send_command_and_ack(ser_m, 'L', 'AckL')
             
             for _ in range(1):
                 print("Reset")
@@ -334,4 +327,8 @@ if __name__ == "__main__":
                 print("reset")
             
                 send_command_and_ack(ser_s, 'q', 'Ackq')
+            if cmd == 'I':
+                print("little pivot left")
+                for _ in range(10):
+                    send_command_and_ack(ser_s, 'I', 'AckI')
                 
