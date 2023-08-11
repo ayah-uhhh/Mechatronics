@@ -1,8 +1,19 @@
+/* 
+*  The following directives are used by Doxygen for automated source code documentation
+*  It is generally considered professional style to include these in each file's header
+* 
+*  @file MechatronicsDrive.ino
+*  @brief The Drive System implementation for team Vibe Check final robot project
+*
+*  @author Steve Christensen
+*  @date August 9, 2023
+*  @version 1.0
+*  Part of the Final Project for MCEN 5115 - Mechatronics and Robotics I
+*  University of Colorado Boulder
+*/ 
+
 #define FALSE (0)
 #define TRUE  (!FALSE)
-
-// Uncomment the following line for the bot to stop after taking a corner, rather than proceeding
-//#define STOP_AFTER_CORNERS TRUE
 
 #include <Motoron.h>
 
@@ -154,6 +165,7 @@ void loop() {
     switch (SerialCommand) {
       case 's': // Start
         Serial.println("Acks");
+        LoopDelayTime = DefaultLoopTimeMs;
       case '1': // StrafeFrontRight
         DriveState = DriveFindLine;
         StrafeFrontRight();
@@ -350,6 +362,7 @@ void loop() {
         DriveContinue();
       }
       break;
+
     case DriveInsideCorner: // Turn left
       if (SensorFrontCornerOuter || SensorFrontCornerInner) {
         CornerLeft();
