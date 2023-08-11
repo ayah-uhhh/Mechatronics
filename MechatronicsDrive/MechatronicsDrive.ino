@@ -371,22 +371,6 @@ void loop() {
       else { // Go straight
         DriveContinue(); 
         DriveState = DriveFindLine;
-        //DriveForwardDefault();
-        //DriveContinue();
-        //DriveState = DriveStraight;
-      }
-      /*
-      else if (SensorFrontSideOuter) {
-        //AllStop(); // We're back on target, so stop turning
-        DriveState = DriveStraight; 
-        DriveContinue();
-      }
-      else { // We are out off the line
-        DriveState = DriveFindLine;
-        StrafeFrontRight();
-        DriveContinue(); 
-      }
-      */
       break;
     case DriveStraight:
       if (SensorFrontCornerOuter) { 
