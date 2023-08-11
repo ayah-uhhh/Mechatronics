@@ -1,6 +1,6 @@
 # Wii Sports Robot Project (CU Boulder Mechatronics Course)
 
-![Project Image](project_image.jpg)
+![Project Image](20230809_095924.jpg)
 
 ## Table of Contents
 
